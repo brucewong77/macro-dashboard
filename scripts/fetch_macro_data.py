@@ -22,7 +22,9 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE = DATA_DIR / "macro_data.json"
 
 
-def safe_float(val) -> float | None:
+from typing import Optional, Dict, List, Any
+
+def safe_float(val) -> Optional[float]:
     """安全转换为浮点数"""
     if pd.isna(val):
         return None
