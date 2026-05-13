@@ -1,412 +1,854 @@
 {
-  "update_time": "2026-05-13 09:00:00",
+  "update_time": "2026-05-13 07:24:40",
   "indicators": {
     "gdp": {
       "value": 5.0,
-      "prev": 4.8,
-      "change": 0.2,
-      "change_pct": 4.17,
-      "date": "2026-Q1",
+      "prev": 5.4,
+      "change": -0.4,
+      "change_pct": -7.41,
+      "date": "2026年第1季度",
       "name": "GDP增速",
       "unit": "%",
       "history": [
-        {"date": "2024-Q1", "value": 5.3},
-        {"date": "2024-Q2", "value": 4.7},
-        {"date": "2024-Q3", "value": 4.6},
-        {"date": "2024-Q4", "value": 5.2},
-        {"date": "2025-Q1", "value": 5.1},
-        {"date": "2025-Q2", "value": 4.9},
-        {"date": "2025-Q3", "value": 4.8},
-        {"date": "2025-Q4", "value": 5.0},
-        {"date": "2026-Q1", "value": 5.0}
+        {
+          "date": "2023年第1-3季度",
+          "value": 5.4
+        },
+        {
+          "date": "2023年第1-4季度",
+          "value": 5.4
+        },
+        {
+          "date": "2023年第1季度",
+          "value": 4.7
+        },
+        {
+          "date": "2024年第1-2季度",
+          "value": 5.0
+        },
+        {
+          "date": "2024年第1-3季度",
+          "value": 4.8
+        },
+        {
+          "date": "2024年第1-4季度",
+          "value": 5.0
+        },
+        {
+          "date": "2024年第1季度",
+          "value": 5.3
+        },
+        {
+          "date": "2025年第1-2季度",
+          "value": 5.3
+        },
+        {
+          "date": "2025年第1-3季度",
+          "value": 5.2
+        },
+        {
+          "date": "2025年第1-4季度",
+          "value": 5.0
+        },
+        {
+          "date": "2025年第1季度",
+          "value": 5.4
+        },
+        {
+          "date": "2026年第1季度",
+          "value": 5.0
+        }
       ]
     },
     "cpi": {
-      "value": 1.2,
-      "prev": 1.0,
-      "change": 0.2,
-      "change_pct": 20.0,
-      "date": "2026-04",
+      "value": null,
+      "prev": null,
+      "change": null,
+      "change_pct": null,
+      "date": "中国CPI月率报告",
       "name": "CPI同比",
       "unit": "%",
       "history": [
-        {"date": "2024-06", "value": 0.2},
-        {"date": "2024-07", "value": 0.5},
-        {"date": "2024-08", "value": 0.6},
-        {"date": "2024-09", "value": 0.4},
-        {"date": "2024-10", "value": 0.3},
-        {"date": "2024-11", "value": 0.2},
-        {"date": "2024-12", "value": 0.1},
-        {"date": "2025-01", "value": 0.5},
-        {"date": "2025-02", "value": 0.7},
-        {"date": "2025-03", "value": 0.9},
-        {"date": "2025-04", "value": 1.0},
-        {"date": "2025-05", "value": 1.1},
-        {"date": "2025-06", "value": 1.0},
-        {"date": "2025-07", "value": 1.0},
-        {"date": "2025-08", "value": 1.1},
-        {"date": "2025-09", "value": 1.0},
-        {"date": "2025-10", "value": 1.1},
-        {"date": "2025-11", "value": 1.0},
-        {"date": "2025-12", "value": 1.1},
-        {"date": "2026-01", "value": 1.0},
-        {"date": "2026-02", "value": 1.1},
-        {"date": "2026-03", "value": 1.0},
-        {"date": "2026-04", "value": 1.2}
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        },
+        {
+          "date": "中国CPI月率报告",
+          "value": null
+        }
       ]
     },
     "ppi": {
-      "value": 2.8,
-      "prev": 0.5,
-      "change": 2.3,
-      "change_pct": 460.0,
-      "date": "2026-04",
+      "value": null,
+      "prev": null,
+      "change": null,
+      "change_pct": null,
+      "date": "中国PPI年率报告",
       "name": "PPI同比",
       "unit": "%",
       "history": [
-        {"date": "2024-06", "value": -0.8},
-        {"date": "2024-07", "value": -0.8},
-        {"date": "2024-08", "value": -1.8},
-        {"date": "2024-09", "value": -2.8},
-        {"date": "2024-10", "value": -2.9},
-        {"date": "2024-11", "value": -2.5},
-        {"date": "2024-12", "value": -2.3},
-        {"date": "2025-01", "value": -2.0},
-        {"date": "2025-02", "value": -1.5},
-        {"date": "2025-03", "value": -0.8},
-        {"date": "2025-04", "value": -0.5},
-        {"date": "2025-05", "value": 0.0},
-        {"date": "2025-06", "value": 0.3},
-        {"date": "2025-07", "value": 0.5},
-        {"date": "2025-08", "value": 0.8},
-        {"date": "2025-09", "value": 1.0},
-        {"date": "2025-10", "value": 1.2},
-        {"date": "2025-11", "value": 1.5},
-        {"date": "2025-12", "value": 1.8},
-        {"date": "2026-01", "value": 2.0},
-        {"date": "2026-02", "value": 2.2},
-        {"date": "2026-03", "value": 2.5},
-        {"date": "2026-04", "value": 2.8}
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        },
+        {
+          "date": "中国PPI年率报告",
+          "value": null
+        }
       ]
     },
     "pmi": {
-      "value": 49.8,
-      "prev": 50.2,
-      "change": -0.4,
-      "change_pct": -0.8,
-      "date": "2026-04",
+      "value": 50.3,
+      "prev": 50.4,
+      "change": -0.1,
+      "change_pct": -0.2,
+      "date": "2026年04月份",
       "name": "制造业PMI",
       "unit": "",
       "history": [
-        {"date": "2024-06", "value": 49.5},
-        {"date": "2024-07", "value": 49.4},
-        {"date": "2024-08", "value": 49.1},
-        {"date": "2024-09", "value": 49.8},
-        {"date": "2024-10", "value": 50.1},
-        {"date": "2024-11", "value": 50.3},
-        {"date": "2024-12", "value": 50.1},
-        {"date": "2025-01", "value": 49.8},
-        {"date": "2025-02", "value": 50.2},
-        {"date": "2025-03", "value": 50.8},
-        {"date": "2025-04", "value": 50.5},
-        {"date": "2025-05", "value": 50.3},
-        {"date": "2025-06", "value": 50.0},
-        {"date": "2025-07", "value": 49.8},
-        {"date": "2025-08", "value": 49.5},
-        {"date": "2025-09", "value": 49.8},
-        {"date": "2025-10", "value": 50.1},
-        {"date": "2025-11", "value": 50.3},
-        {"date": "2025-12", "value": 50.1},
-        {"date": "2026-01", "value": 49.8},
-        {"date": "2026-02", "value": 50.2},
-        {"date": "2026-03", "value": 50.2},
-        {"date": "2026-04", "value": 49.8}
+        {
+          "date": "2024年05月份",
+          "value": 49.5
+        },
+        {
+          "date": "2024年06月份",
+          "value": 49.5
+        },
+        {
+          "date": "2024年07月份",
+          "value": 49.4
+        },
+        {
+          "date": "2024年08月份",
+          "value": 49.1
+        },
+        {
+          "date": "2024年09月份",
+          "value": 49.8
+        },
+        {
+          "date": "2024年10月份",
+          "value": 50.1
+        },
+        {
+          "date": "2024年11月份",
+          "value": 50.3
+        },
+        {
+          "date": "2024年12月份",
+          "value": 50.1
+        },
+        {
+          "date": "2025年01月份",
+          "value": 49.1
+        },
+        {
+          "date": "2025年02月份",
+          "value": 50.2
+        },
+        {
+          "date": "2025年03月份",
+          "value": 50.5
+        },
+        {
+          "date": "2025年04月份",
+          "value": 49.0
+        },
+        {
+          "date": "2025年05月份",
+          "value": 49.5
+        },
+        {
+          "date": "2025年06月份",
+          "value": 49.7
+        },
+        {
+          "date": "2025年07月份",
+          "value": 49.3
+        },
+        {
+          "date": "2025年08月份",
+          "value": 49.4
+        },
+        {
+          "date": "2025年09月份",
+          "value": 49.8
+        },
+        {
+          "date": "2025年10月份",
+          "value": 49.0
+        },
+        {
+          "date": "2025年11月份",
+          "value": 49.2
+        },
+        {
+          "date": "2025年12月份",
+          "value": 50.1
+        },
+        {
+          "date": "2026年01月份",
+          "value": 49.3
+        },
+        {
+          "date": "2026年02月份",
+          "value": 49.0
+        },
+        {
+          "date": "2026年03月份",
+          "value": 50.4
+        },
+        {
+          "date": "2026年04月份",
+          "value": 50.3
+        }
       ]
     },
     "m2": {
       "value": 8.5,
-      "prev": 8.3,
-      "change": 0.2,
-      "change_pct": 2.41,
-      "date": "2026-04",
+      "prev": 9.0,
+      "change": -0.5,
+      "change_pct": -5.56,
+      "date": "2026年03月份",
       "name": "M2同比增速",
       "unit": "%",
       "history": [
-        {"date": "2024-06", "value": 6.2},
-        {"date": "2024-07", "value": 6.3},
-        {"date": "2024-08", "value": 6.3},
-        {"date": "2024-09", "value": 6.8},
-        {"date": "2024-10", "value": 7.0},
-        {"date": "2024-11", "value": 7.1},
-        {"date": "2024-12", "value": 7.3},
-        {"date": "2025-01", "value": 7.5},
-        {"date": "2025-02", "value": 7.8},
-        {"date": "2025-03", "value": 8.0},
-        {"date": "2025-04", "value": 8.1},
-        {"date": "2025-05", "value": 8.2},
-        {"date": "2025-06", "value": 8.1},
-        {"date": "2025-07", "value": 8.2},
-        {"date": "2025-08", "value": 8.1},
-        {"date": "2025-09", "value": 8.2},
-        {"date": "2025-10", "value": 8.3},
-        {"date": "2025-11", "value": 8.2},
-        {"date": "2025-12", "value": 8.3},
-        {"date": "2026-01", "value": 8.4},
-        {"date": "2026-02", "value": 8.3},
-        {"date": "2026-03", "value": 8.3},
-        {"date": "2026-04", "value": 8.5}
+        {
+          "date": "2024年04月份",
+          "value": 7.2
+        },
+        {
+          "date": "2024年05月份",
+          "value": 7.0
+        },
+        {
+          "date": "2024年06月份",
+          "value": 6.2
+        },
+        {
+          "date": "2024年07月份",
+          "value": 6.3
+        },
+        {
+          "date": "2024年08月份",
+          "value": 6.3
+        },
+        {
+          "date": "2024年09月份",
+          "value": 6.8
+        },
+        {
+          "date": "2024年10月份",
+          "value": 7.5
+        },
+        {
+          "date": "2024年11月份",
+          "value": 7.1
+        },
+        {
+          "date": "2024年12月份",
+          "value": 7.3
+        },
+        {
+          "date": "2025年01月份",
+          "value": 7.0
+        },
+        {
+          "date": "2025年02月份",
+          "value": 7.0
+        },
+        {
+          "date": "2025年03月份",
+          "value": 7.0
+        },
+        {
+          "date": "2025年04月份",
+          "value": 8.0
+        },
+        {
+          "date": "2025年05月份",
+          "value": 7.9
+        },
+        {
+          "date": "2025年06月份",
+          "value": 8.3
+        },
+        {
+          "date": "2025年07月份",
+          "value": 8.8
+        },
+        {
+          "date": "2025年08月份",
+          "value": 8.8
+        },
+        {
+          "date": "2025年09月份",
+          "value": 8.4
+        },
+        {
+          "date": "2025年10月份",
+          "value": 8.2
+        },
+        {
+          "date": "2025年11月份",
+          "value": 8.0
+        },
+        {
+          "date": "2025年12月份",
+          "value": 8.5
+        },
+        {
+          "date": "2026年01月份",
+          "value": 9.0
+        },
+        {
+          "date": "2026年02月份",
+          "value": 9.0
+        },
+        {
+          "date": "2026年03月份",
+          "value": 8.5
+        }
       ]
     },
     "lpr": {
-      "value": 3.45,
-      "prev": 3.45,
+      "value": 3.0,
+      "prev": 3.0,
       "change": 0.0,
       "change_pct": 0.0,
       "date": "2026-04-20",
       "name": "LPR(1年)",
       "unit": "%",
       "history": [
-        {"date": "2024-02-20", "value": 3.45},
-        {"date": "2024-03-20", "value": 3.45},
-        {"date": "2024-04-20", "value": 3.45},
-        {"date": "2024-05-20", "value": 3.45},
-        {"date": "2024-06-20", "value": 3.45},
-        {"date": "2024-07-20", "value": 3.35},
-        {"date": "2024-08-20", "value": 3.35},
-        {"date": "2024-09-20", "value": 3.35},
-        {"date": "2024-10-20", "value": 3.10},
-        {"date": "2024-11-20", "value": 3.10},
-        {"date": "2024-12-20", "value": 3.10},
-        {"date": "2025-01-20", "value": 3.10},
-        {"date": "2025-02-20", "value": 3.10},
-        {"date": "2025-03-20", "value": 3.10},
-        {"date": "2025-04-20", "value": 3.10},
-        {"date": "2025-05-20", "value": 3.10},
-        {"date": "2025-06-20", "value": 3.10},
-        {"date": "2025-07-20", "value": 3.20},
-        {"date": "2025-08-20", "value": 3.20},
-        {"date": "2025-09-20", "value": 3.20},
-        {"date": "2025-10-20", "value": 3.35},
-        {"date": "2025-11-20", "value": 3.35},
-        {"date": "2025-12-20", "value": 3.35},
-        {"date": "2026-01-20", "value": 3.45},
-        {"date": "2026-02-20", "value": 3.45},
-        {"date": "2026-03-20", "value": 3.45},
-        {"date": "2026-04-20", "value": 3.45}
+        {
+          "date": "2024-05-20",
+          "value": 3.45
+        },
+        {
+          "date": "2024-06-20",
+          "value": 3.45
+        },
+        {
+          "date": "2024-07-22",
+          "value": 3.35
+        },
+        {
+          "date": "2024-08-20",
+          "value": 3.35
+        },
+        {
+          "date": "2024-09-20",
+          "value": 3.35
+        },
+        {
+          "date": "2024-10-21",
+          "value": 3.1
+        },
+        {
+          "date": "2024-11-20",
+          "value": 3.1
+        },
+        {
+          "date": "2024-12-20",
+          "value": 3.1
+        },
+        {
+          "date": "2025-01-20",
+          "value": 3.1
+        },
+        {
+          "date": "2025-02-20",
+          "value": 3.1
+        },
+        {
+          "date": "2025-03-20",
+          "value": 3.1
+        },
+        {
+          "date": "2025-04-21",
+          "value": 3.1
+        },
+        {
+          "date": "2025-05-20",
+          "value": 3.0
+        },
+        {
+          "date": "2025-06-20",
+          "value": 3.0
+        },
+        {
+          "date": "2025-07-21",
+          "value": 3.0
+        },
+        {
+          "date": "2025-08-20",
+          "value": 3.0
+        },
+        {
+          "date": "2025-09-22",
+          "value": 3.0
+        },
+        {
+          "date": "2025-10-20",
+          "value": 3.0
+        },
+        {
+          "date": "2025-11-20",
+          "value": 3.0
+        },
+        {
+          "date": "2025-12-22",
+          "value": 3.0
+        },
+        {
+          "date": "2026-01-20",
+          "value": 3.0
+        },
+        {
+          "date": "2026-02-24",
+          "value": 3.0
+        },
+        {
+          "date": "2026-03-20",
+          "value": 3.0
+        },
+        {
+          "date": "2026-04-20",
+          "value": 3.0
+        }
       ]
     },
     "unemployment": {
-      "value": 5.1,
-      "prev": 5.2,
-      "change": -0.1,
-      "change_pct": -1.92,
-      "date": "2026-04",
+      "value": null,
+      "prev": null,
+      "change": null,
+      "change_pct": null,
+      "date": "202603",
       "name": "失业率",
       "unit": "%",
       "history": [
-        {"date": "2024-06", "value": 5.0},
-        {"date": "2024-07", "value": 5.1},
-        {"date": "2024-08", "value": 5.2},
-        {"date": "2024-09", "value": 5.1},
-        {"date": "2024-10", "value": 5.0},
-        {"date": "2024-11", "value": 5.0},
-        {"date": "2024-12", "value": 5.1},
-        {"date": "2025-01", "value": 5.2},
-        {"date": "2025-02", "value": 5.3},
-        {"date": "2025-03", "value": 5.2},
-        {"date": "2025-04", "value": 5.2},
-        {"date": "2025-05", "value": 5.1},
-        {"date": "2025-06", "value": 5.1},
-        {"date": "2025-07", "value": 5.2},
-        {"date": "2025-08", "value": 5.2},
-        {"date": "2025-09", "value": 5.1},
-        {"date": "2025-10", "value": 5.1},
-        {"date": "2025-11", "value": 5.2},
-        {"date": "2025-12", "value": 5.2},
-        {"date": "2026-01", "value": 5.2},
-        {"date": "2026-02", "value": 5.3},
-        {"date": "2026-03", "value": 5.2},
-        {"date": "2026-04", "value": 5.1}
+        {
+          "date": "202508",
+          "value": null
+        },
+        {
+          "date": "202508",
+          "value": null
+        },
+        {
+          "date": "202508",
+          "value": null
+        },
+        {
+          "date": "202509",
+          "value": null
+        },
+        {
+          "date": "202509",
+          "value": null
+        },
+        {
+          "date": "202509",
+          "value": null
+        },
+        {
+          "date": "202510",
+          "value": null
+        },
+        {
+          "date": "202510",
+          "value": null
+        },
+        {
+          "date": "202510",
+          "value": null
+        },
+        {
+          "date": "202511",
+          "value": null
+        },
+        {
+          "date": "202511",
+          "value": null
+        },
+        {
+          "date": "202511",
+          "value": null
+        },
+        {
+          "date": "202512",
+          "value": null
+        },
+        {
+          "date": "202512",
+          "value": null
+        },
+        {
+          "date": "202512",
+          "value": null
+        },
+        {
+          "date": "202601",
+          "value": null
+        },
+        {
+          "date": "202601",
+          "value": null
+        },
+        {
+          "date": "202601",
+          "value": null
+        },
+        {
+          "date": "202602",
+          "value": null
+        },
+        {
+          "date": "202602",
+          "value": null
+        },
+        {
+          "date": "202602",
+          "value": null
+        },
+        {
+          "date": "202603",
+          "value": null
+        },
+        {
+          "date": "202603",
+          "value": null
+        },
+        {
+          "date": "202603",
+          "value": null
+        }
       ]
     },
-    "fx_reserves": {
-      "value": 3.28,
-      "prev": 3.27,
-      "change": 0.01,
-      "change_pct": 0.31,
-      "date": "2026-04",
-      "name": "外汇储备",
-      "unit": "万亿$",
-      "history": [
-        {"date": "2024-06", "value": 3.22},
-        {"date": "2024-07", "value": 3.24},
-        {"date": "2024-08", "value": 3.23},
-        {"date": "2024-09", "value": 3.26},
-        {"date": "2024-10", "value": 3.25},
-        {"date": "2024-11", "value": 3.24},
-        {"date": "2024-12", "value": 3.20},
-        {"date": "2025-01", "value": 3.21},
-        {"date": "2025-02", "value": 3.22},
-        {"date": "2025-03", "value": 3.24},
-        {"date": "2025-04", "value": 3.25},
-        {"date": "2025-05", "value": 3.26},
-        {"date": "2025-06", "value": 3.25},
-        {"date": "2025-07", "value": 3.26},
-        {"date": "2025-08", "value": 3.27},
-        {"date": "2025-09", "value": 3.26},
-        {"date": "2025-10", "value": 3.27},
-        {"date": "2025-11", "value": 3.26},
-        {"date": "2025-12", "value": 3.25},
-        {"date": "2026-01", "value": 3.26},
-        {"date": "2026-02", "value": 3.27},
-        {"date": "2026-03", "value": 3.27},
-        {"date": "2026-04", "value": 3.28}
-      ]
-    },
-    "retail_sales": {
-      "value": 5.6,
-      "prev": 5.4,
-      "change": 0.2,
-      "change_pct": 3.7,
-      "date": "2026-04",
-      "name": "社零同比",
-      "unit": "%",
-      "history": [
-        {"date": "2024-06", "value": 2.0},
-        {"date": "2024-07", "value": 2.7},
-        {"date": "2024-08", "value": 2.1},
-        {"date": "2024-09", "value": 3.2},
-        {"date": "2024-10", "value": 4.8},
-        {"date": "2024-11", "value": 3.0},
-        {"date": "2024-12", "value": 3.7},
-        {"date": "2025-01", "value": 4.2},
-        {"date": "2025-02", "value": 5.5},
-        {"date": "2025-03", "value": 4.5},
-        {"date": "2025-04", "value": 4.8},
-        {"date": "2025-05", "value": 5.0},
-        {"date": "2025-06", "value": 5.2},
-        {"date": "2025-07", "value": 5.0},
-        {"date": "2025-08", "value": 5.1},
-        {"date": "2025-09", "value": 5.3},
-        {"date": "2025-10", "value": 5.2},
-        {"date": "2025-11", "value": 5.4},
-        {"date": "2025-12", "value": 5.5},
-        {"date": "2026-01", "value": 5.4},
-        {"date": "2026-02", "value": 5.5},
-        {"date": "2026-03", "value": 5.4},
-        {"date": "2026-04", "value": 5.6}
-      ]
-    },
-    "fixed_asset_investment": {
-      "value": 4.0,
-      "prev": 3.9,
-      "change": 0.1,
-      "change_pct": 2.56,
-      "date": "2026-04",
-      "name": "固投累计同比",
-      "unit": "%",
-      "history": [
-        {"date": "2024-06", "value": 3.9},
-        {"date": "2024-07", "value": 3.6},
-        {"date": "2024-08", "value": 3.4},
-        {"date": "2024-09", "value": 3.4},
-        {"date": "2024-10", "value": 3.4},
-        {"date": "2024-11", "value": 3.3},
-        {"date": "2024-12", "value": 3.2},
-        {"date": "2025-01", "value": 3.3},
-        {"date": "2025-02", "value": 3.4},
-        {"date": "2025-03", "value": 3.5},
-        {"date": "2025-04", "value": 3.6},
-        {"date": "2025-05", "value": 3.7},
-        {"date": "2025-06", "value": 3.8},
-        {"date": "2025-07", "value": 3.8},
-        {"date": "2025-08", "value": 3.9},
-        {"date": "2025-09", "value": 3.9},
-        {"date": "2025-10", "value": 3.9},
-        {"date": "2025-11", "value": 4.0},
-        {"date": "2025-12", "value": 4.0},
-        {"date": "2026-01", "value": 4.0},
-        {"date": "2026-02", "value": 4.0},
-        {"date": "2026-03", "value": 3.9},
-        {"date": "2026-04", "value": 4.0}
-      ]
-    },
-    "export": {
-      "value": 6.8,
-      "prev": 6.2,
-      "change": 0.6,
-      "change_pct": 9.68,
-      "date": "2026-04",
-      "name": "出口同比",
-      "unit": "%",
-      "history": [
-        {"date": "2024-06", "value": 8.6},
-        {"date": "2024-07", "value": 7.0},
-        {"date": "2024-08", "value": 8.7},
-        {"date": "2024-09", "value": 2.4},
-        {"date": "2024-10", "value": 12.7},
-        {"date": "2024-11", "value": 6.7},
-        {"date": "2024-12", "value": 10.7},
-        {"date": "2025-01", "value": 7.3},
-        {"date": "2025-02", "value": 5.6},
-        {"date": "2025-03", "value": 4.1},
-        {"date": "2025-04", "value": 5.5},
-        {"date": "2025-05", "value": 6.0},
-        {"date": "2025-06", "value": 6.5},
-        {"date": "2025-07", "value": 6.2},
-        {"date": "2025-08", "value": 6.0},
-        {"date": "2025-09", "value": 6.3},
-        {"date": "2025-10", "value": 6.5},
-        {"date": "2025-11", "value": 6.0},
-        {"date": "2025-12", "value": 6.5},
-        {"date": "2026-01", "value": 6.2},
-        {"date": "2026-02", "value": 6.5},
-        {"date": "2026-03", "value": 6.2},
-        {"date": "2026-04", "value": 6.8}
-      ]
-    },
+    "fx_reserves": {},
+    "retail_sales": {},
+    "fixed_asset_investment": {},
+    "export": {},
     "shrzgm": {
-      "value": 8.5,
-      "prev": 8.3,
-      "change": 0.2,
-      "change_pct": 2.41,
-      "date": "2026-04",
+      "value": 22075.0,
+      "prev": 24926.0,
+      "change": -2851.0,
+      "change_pct": -11.44,
+      "date": "202512",
       "name": "社融存量增速",
       "unit": "%",
       "history": [
-        {"date": "2024-06", "value": 8.1},
-        {"date": "2024-07", "value": 8.2},
-        {"date": "2024-08", "value": 8.1},
-        {"date": "2024-09", "value": 8.0},
-        {"date": "2024-10", "value": 7.8},
-        {"date": "2024-11", "value": 7.8},
-        {"date": "2024-12", "value": 8.0},
-        {"date": "2025-01", "value": 8.1},
-        {"date": "2025-02", "value": 8.2},
-        {"date": "2025-03", "value": 8.2},
-        {"date": "2025-04", "value": 8.3},
-        {"date": "2025-05", "value": 8.3},
-        {"date": "2025-06", "value": 8.2},
-        {"date": "2025-07", "value": 8.3},
-        {"date": "2025-08", "value": 8.2},
-        {"date": "2025-09", "value": 8.3},
-        {"date": "2025-10", "value": 8.3},
-        {"date": "2025-11", "value": 8.4},
-        {"date": "2025-12", "value": 8.4},
-        {"date": "2026-01", "value": 8.4},
-        {"date": "2026-02", "value": 8.3},
-        {"date": "2026-03", "value": 8.3},
-        {"date": "2026-04", "value": 8.5}
+        {
+          "date": "202401",
+          "value": 64734.0
+        },
+        {
+          "date": "202402",
+          "value": 14959.0
+        },
+        {
+          "date": "202403",
+          "value": 48335.0
+        },
+        {
+          "date": "202404",
+          "value": -658.0
+        },
+        {
+          "date": "202405",
+          "value": 20623.0
+        },
+        {
+          "date": "202406",
+          "value": 32985.0
+        },
+        {
+          "date": "202407",
+          "value": 7707.0
+        },
+        {
+          "date": "202408",
+          "value": 30323.0
+        },
+        {
+          "date": "202409",
+          "value": 37635.0
+        },
+        {
+          "date": "202410",
+          "value": 14120.0
+        },
+        {
+          "date": "202411",
+          "value": 23288.0
+        },
+        {
+          "date": "202412",
+          "value": 28507.0
+        },
+        {
+          "date": "202501",
+          "value": 70546.0
+        },
+        {
+          "date": "202502",
+          "value": 22331.0
+        },
+        {
+          "date": "202503",
+          "value": 58961.0
+        },
+        {
+          "date": "202504",
+          "value": 11599.0
+        },
+        {
+          "date": "202505",
+          "value": 22900.0
+        },
+        {
+          "date": "202506",
+          "value": 42251.0
+        },
+        {
+          "date": "202507",
+          "value": 11307.0
+        },
+        {
+          "date": "202508",
+          "value": 25660.0
+        },
+        {
+          "date": "202509",
+          "value": 35299.0
+        },
+        {
+          "date": "202510",
+          "value": 8178.0
+        },
+        {
+          "date": "202511",
+          "value": 24926.0
+        },
+        {
+          "date": "202512",
+          "value": 22075.0
+        }
       ]
     }
   },
   "calendar": [
-    {"name": "CPI、PPI", "expected_day": 10, "status": "已发布"},
-    {"name": "固定资产投资", "expected_day": 15, "status": "待发布"},
-    {"name": "社会消费品零售总额", "expected_day": 15, "status": "待发布"},
-    {"name": "LPR报价", "expected_day": 20, "status": "待发布"},
-    {"name": "社融、M2", "expected_day": 10, "status": "已发布"},
-    {"name": "外汇储备", "expected_day": 7, "status": "已发布"},
-    {"name": "PMI", "expected_day": 31, "status": "待发布"}
+    {
+      "name": "CPI、PPI",
+      "expected_day": 10,
+      "status": "已发布"
+    },
+    {
+      "name": "固定资产投资",
+      "expected_day": 15,
+      "status": "待发布"
+    },
+    {
+      "name": "社会消费品零售总额",
+      "expected_day": 15,
+      "status": "待发布"
+    },
+    {
+      "name": "LPR报价",
+      "expected_day": 20,
+      "status": "待发布"
+    },
+    {
+      "name": "社融、M2",
+      "expected_day": 10,
+      "status": "已发布"
+    },
+    {
+      "name": "外汇储备",
+      "expected_day": 7,
+      "status": "已发布"
+    },
+    {
+      "name": "PMI",
+      "expected_day": 31,
+      "status": "待发布"
+    }
   ]
 }
