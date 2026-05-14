@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-05-13 07:24:40",
+  "update_time": "2026-05-14 05:04:34",
   "indicators": {
     "gdp": {
       "value": 5.0,
@@ -823,12 +823,12 @@
     {
       "name": "固定资产投资",
       "expected_day": 15,
-      "status": "待发布"
+      "status": "即将发布"
     },
     {
       "name": "社会消费品零售总额",
       "expected_day": 15,
-      "status": "待发布"
+      "status": "即将发布"
     },
     {
       "name": "LPR报价",
