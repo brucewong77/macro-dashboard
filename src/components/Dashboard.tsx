@@ -53,91 +53,95 @@ export default function Dashboard() {
   useEffect(() => {
     if (!data || !chartRef.current) return;
 
-    if (!chartInstance.current) {
-      chartInstance.current = echarts.init(chartRef.current);
-    }
+    try {
+      if (!chartInstance.current) {
+        chartInstance.current = echarts.init(chartRef.current);
+      }
 
-    const cpi = data.indicators.cpi?.history || [];
-    const ppi = data.indicators.ppi?.history || [];
+      const cpi = data.indicators.cpi?.history || [];
+      const ppi = data.indicators.ppi?.history || [];
 
-    const dates = cpi.map((d) => d.date);
-    const cpiValues = cpi.map((d) => d.value);
-    const ppiValues = ppi.map((d) => d.value);
+      const dates = cpi.map((d) => d.date);
+      const cpiValues = cpi.map((d) => d.value);
+      const ppiValues = ppi.map((d) => d.value);
 
-    const option: echarts.EChartsOption = {
-      title: {
-        text: "CPI & PPI 走势",
-        left: "center",
-        textStyle: { fontSize: 16, fontWeight: "normal" },
-      },
-      tooltip: {
-        trigger: "axis",
-        formatter: (params: any) => {
-          let html = `<div style="font-weight:bold;margin-bottom:4px">${params[0].axisValue}</div>`;
-          params.forEach((p: any) => {
-            html += `<div style="display:flex;align-items:center;gap:6px">
-              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color}"></span>
-              <span>${p.seriesName}: ${p.value ?? "—"}%</span>
-            </div>`;
-          });
-          return html;
+      const option: echarts.EChartsOption = {
+        title: {
+          text: "CPI & PPI 走势",
+          left: "center",
+          textStyle: { fontSize: 16, fontWeight: "normal" },
         },
-      },
-      legend: {
-        data: ["CPI同比", "PPI同比"],
-        bottom: 0,
-      },
-      grid: {
-        left: 40,
-        right: 20,
-        top: 50,
-        bottom: 40,
-        containLabel: true,
-      },
-      xAxis: {
-        type: "category",
-        data: dates,
-        axisLabel: { rotate: 45, fontSize: 11 },
-      },
-      yAxis: {
-        type: "value",
-        axisLabel: { formatter: "{value}%" },
-      },
-      series: [
-        {
-          name: "CPI同比",
-          type: "line",
-          data: cpiValues,
-          smooth: true,
-          symbol: "circle",
-          symbolSize: 6,
-          lineStyle: { color: "#5470c6", width: 2 },
-          itemStyle: { color: "#5470c6" },
-          areaStyle: {
-            color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(84,112,198,0.3)" },
-              { offset: 1, color: "rgba(84,112,198,0.05)" },
-            ]),
+        tooltip: {
+          trigger: "axis",
+          formatter: (params: any) => {
+            let html = `<div style="font-weight:bold;margin-bottom:4px">${params[0].axisValue}</div>`;
+            params.forEach((p: any) => {
+              html += `<div style="display:flex;align-items:center;gap:6px">
+                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color}"></span>
+                <span>${p.seriesName}: ${p.value ?? "—"}%</span>
+              </div>`;
+            });
+            return html;
           },
         },
-        {
-          name: "PPI同比",
-          type: "line",
-          data: ppiValues,
-          smooth: true,
-          symbol: "circle",
-          symbolSize: 6,
-          lineStyle: { color: "#91cc75", width: 2 },
-          itemStyle: { color: "#91cc75" },
+        legend: {
+          data: ["CPI同比", "PPI同比"],
+          bottom: 0,
         },
-      ],
-    };
+        grid: {
+          left: 40,
+          right: 20,
+          top: 50,
+          bottom: 40,
+          containLabel: true,
+        },
+        xAxis: {
+          type: "category",
+          data: dates,
+          axisLabel: { rotate: 45, fontSize: 11 },
+        },
+        yAxis: {
+          type: "value",
+          axisLabel: { formatter: "{value}%" },
+        },
+        series: [
+          {
+            name: "CPI同比",
+            type: "line",
+            data: cpiValues,
+            smooth: true,
+            symbol: "circle",
+            symbolSize: 6,
+            lineStyle: { color: "#5470c6", width: 2 },
+            itemStyle: { color: "#5470c6" },
+            areaStyle: {
+              color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: "rgba(84,112,198,0.3)" },
+                { offset: 1, color: "rgba(84,112,198,0.05)" },
+              ]),
+            },
+          },
+          {
+            name: "PPI同比",
+            type: "line",
+            data: ppiValues,
+            smooth: true,
+            symbol: "circle",
+            symbolSize: 6,
+            lineStyle: { color: "#91cc75", width: 2 },
+            itemStyle: { color: "#91cc75" },
+          },
+        ],
+      };
 
-    chartInstance.current.setOption(option);
+      chartInstance.current.setOption(option);
 
-    const handleResize = () => chartInstance.current?.resize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+      const handleResize = () => chartInstance.current?.resize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    } catch (chartErr) {
+      console.error("图表初始化失败:", chartErr);
+    }
   }, [data]);
 
   if (loading && !data) {
