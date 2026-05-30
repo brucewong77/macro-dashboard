@@ -623,6 +623,11 @@ def main():
         for k, msg in errors.items():
             print(f"  - {k}: {msg}")
 
+    # 统一过滤掉 history 中 value 为 None 的条目（如春节2月合并统计等源数据缺失）
+    for v in indicators.values():
+        if isinstance(v, dict) and "history" in v:
+            v["history"] = [h for h in v["history"] if h.get("value") is not None]
+
     output = {
         "update_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "indicators": indicators,

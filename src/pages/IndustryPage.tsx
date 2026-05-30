@@ -1,38 +1,14 @@
-import { useEffect, useState } from "react";
-import { loadMacroData } from "../data/api";
-import type { MacroData } from "../data/api";
+import MultiIndicatorPage from "./MultiIndicatorPage";
 
 export default function IndustryPage() {
-  const [data, setData] = useState<MacroData | null>(null);
-
-  useEffect(() => {
-    loadMacroData().then(setData);
-  }, []);
-
-  if (!data) return <div style={{ padding: 40, textAlign: "center" }}>加载中...</div>;
-
   return (
-    <div>
-      <div style={styles.descCard}>
-        <h2 style={styles.descTitle}>工业能源</h2>
-        <p style={styles.descText}>工业能源指标反映工业生产活动和能源消费状况，是判断实体经济运行状况的重要依据。</p>
-      </div>
-      <div style={{ padding: 40, textAlign: "center", color: "#999" }}>
-        该模块数据正在完善中，敬请期待...
-      </div>
-    </div>
+    <MultiIndicatorPage
+      title="工业能源"
+      description="工业生产指标反映制造业和工业整体运行状况，PMI 和 PPI 是重要的先行指标。"
+      indicators={[
+        { key: "pmi", name: "制造业PMI", desc: "制造业采购经理指数，荣枯线为50，高于50表示制造业扩张，低于50表示收缩。" },
+        { key: "ppi", name: "PPI同比", desc: "工业品出厂价格同比，反映工业生产端的通胀压力，与企业利润密切相关。" },
+      ]}
+    />
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  descCard: {
-    background: "#fff",
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 20,
-    boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
-    border: "1px solid #f0f0f0",
-  },
-  descTitle: { fontSize: 18, fontWeight: 600, marginBottom: 8, color: "#1f1f1f" },
-  descText: { fontSize: 14, color: "#666", lineHeight: 1.6 },
-};
