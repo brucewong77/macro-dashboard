@@ -46,9 +46,6 @@ jobs:
       # Step 1: 检出代码
       - name: 检出代码
         uses: actions/checkout@v4
-        with:
-          # 拉取完整历史（可选，用于某些场景）
-          fetch-depth: 1
 
       # Step 2: 设置 Python
       - name: 设置 Python 3.11
@@ -107,10 +104,9 @@ jobs:
 
       # Step 9: 上传构建产物（供部署步骤使用）
       - name: 上传构建产物
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
-          name: github-pages-dist
 
   # ==========================
   # Job 2: 部署到 GitHub Pages
