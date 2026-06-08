@@ -1,104 +1,134 @@
-name: Auto Update Macro Data
+name: 定时更新宏观经济数据
 
 on:
+  # ===== 定时触发 =====
+  # 每天早上8点运行 (北京时间 UTC+8 = UTC 00:00)
+  # cron 语法: 分 时 日 月 周 (UTC时间)
   schedule:
-    # 每天北京时间 09:30 运行 (UTC 01:30)
-    - cron: '30 1 * * *'
-  workflow_dispatch:  # 允许手动触发
+    - cron: '0 0 * * *'     # 每天 00:00 UTC = 08:00 北京时间
+    # - cron: '0 0 * * 1'   # 每周一 08:00 (周一发周报场景)
+    # - cron: '0 */6 * * *' # 每6小时一次
 
+  # ===== 手动触发 =====
+  # 在 GitHub 仓库页面点击 "Run workflow" 按钮即可手动运行
+  workflow_dispatch:
+    # 可添加输入参数
+    inputs:
+      data_source:
+        description: '数据源选择'
+        required: true
+        default: 'akshare'
+        type: choice
+        options:
+          - akshare
+          - mock
+
+# ===== 权限设置 =====
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read      # 读取仓库代码
+  pages: write        # 写入 GitHub Pages
+  id-token: write     # 用于 Pages 部署的身份验证
 
+# ===== 并发控制 =====
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
-  fetch-data:
+  # ==========================
+  # Job 1: 爬取数据 + 构建
+  # ==========================
+  update-and-build:
+    name: 爬取数据并构建
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Set up Python
+    steps:
+      # Step 1: 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          # 拉取完整历史（可选，用于某些场景）
+          fetch-depth: 1
+
+      # Step 2: 设置 Python
+      - name: 设置 Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          # 缓存 pip 依赖
+          cache: 'pip'
 
-      - name: Cache pip dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('scripts/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install Python dependencies
+      # Step 3: 安装 Python 依赖
+      - name: 安装数据爬取依赖
         run: |
-          python -m pip install --upgrade pip
-          pip install -r scripts/requirements.txt
+          pip install akshare pandas -i https://pypi.tuna.tsinghua.edu.cn/simple
+          echo "Python 依赖安装完成"
 
-      - name: Fetch macro data
-        run: python scripts/fetch_macro_data.py
-
-      - name: Commit and push data updates
+      # Step 4: 运行数据爬取脚本
+      # ⚠️ 关键步骤：运行 Python 脚本，生成 public/data/macro_data.json
+      - name: 爬取最新宏观经济数据
+        id: fetch
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/macro_data.json
-          if git diff --cached --quiet; then
-            echo "No data changes to commit."
-          else
-            git commit -m "chore: auto-update macro data [$(date -u +'%Y-%m-%d %H:%M UTC')]"
-            git push
-          fi
+          python scripts/fetch_macro_data.py
+          echo "=== 数据爬取结果 ==="
+          ls -la public/data/
+          echo "=== 数据文件内容预览 ==="
+          cat public/data/macro_data.json | head -50
 
-  build-and-deploy:
-    needs: fetch-data
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}  # 拉取 fetch-data job push 后的最新 commit
-
-      - name: Set up Node.js
+      # Step 5: 设置 Node.js
+      - name: 设置 Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      # Step 6: 安装前端依赖
+      - name: 安装 npm 依赖
         run: npm ci
 
-      - name: Build
+      # Step 7: 构建项目
+      # ⚠️ Vite 会自动将 public/ 目录下的文件复制到 dist/
+      # 所以 public/data/macro_data.json 会被自动包含在构建产物中
+      - name: Vite 构建
         run: npm run build
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      # Step 8: 验证构建产物中包含数据文件
+      - name: 验证数据文件
+        run: |
+          echo "=== dist/data/ 目录内容 ==="
+          ls -la dist/data/ || echo "dist/data/ 目录不存在"
+          if [ -f "dist/data/macro_data.json" ]; then
+            echo "数据文件已成功包含在构建产物中"
+            echo "文件大小: $(du -h dist/data/macro_data.json | cut -f1)"
+          else
+            echo "警告: 数据文件未在构建产物中"
+            # 手动复制作为备用
+            mkdir -p dist/data
+            cp public/data/*.json dist/data/ 2>/dev/null || true
+          fi
 
-      - name: Upload artifact
+      # Step 9: 上传构建产物（供部署步骤使用）
+      - name: 上传构建产物
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: ./dist
+          name: github-pages-dist
 
-      - name: Deploy to GitHub Pages
+  # ==========================
+  # Job 2: 部署到 GitHub Pages
+  # ==========================
+  deploy:
+    name: 部署到 GitHub Pages
+    # 依赖 Job 1 完成
+    needs: update-and-build
+    runs-on: ubuntu-latest
+
+    # 环境配置（用于 GitHub Pages 部署）
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 部署到 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Install Aliyun OSS util
-        run: |
-          curl -fsSL -o ossutil https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil64
-          chmod +x ossutil
-          sudo mv ossutil /usr/local/bin/
-
-      - name: Upload to Aliyun OSS
-        env:
-          ALI_ACCESS_KEY_ID: ${{ secrets.ALI_ACCESS_KEY_ID }}
-          ALI_ACCESS_KEY_SECRET: ${{ secrets.ALI_ACCESS_KEY_SECRET }}
-        run: |
-          ossutil config -i "$ALI_ACCESS_KEY_ID" -k "$ALI_ACCESS_KEY_SECRET" -e oss-cn-hangzhou.aliyuncs.com -L CH
-          ossutil cp -rf ./dist/ oss://bigsmaller-com/
-          echo "✅ Aliyun OSS sync completed"
