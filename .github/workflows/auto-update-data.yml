@@ -28,6 +28,7 @@ permissions:
   contents: read      # 读取仓库代码
   pages: write        # 写入 GitHub Pages
   id-token: write     # 用于 Pages 部署的身份验证
+  actions: read       # 读取Artifact信息
 
 # ===== 并发控制 =====
 concurrency:
@@ -107,7 +108,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
-          name: github-pages
 
   # ==========================
   # Job 2: 部署到 GitHub Pages
