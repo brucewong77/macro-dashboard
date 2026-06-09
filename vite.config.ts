@@ -33,7 +33,7 @@ function performanceOptimizePlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: 'https://www.bigsmaller.com/',
+  base: '/',
   plugins: [
     inspectAttr(),
     react(),
