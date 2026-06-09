@@ -115,11 +115,19 @@ def fetch_unemp():
 
 def fetch_lpr():
     try:
+        if not AKSHARE_AVAILABLE:
+            return None
         df = ak.macro_china_lpr().sort_values('TRADE_DATE')
-        df = df[df['TRADE_DATE'] >= '2024-01-01']
-        d = [str(x) for x in col(df, 'TRADE_DATE')]; l1 = [to_num(x) for x in col(df, 'LPR1Y')]; l5 = [to_num(x) for x in col(df, 'LPR5Y')]
-        if d: print(f"LPR: {len(d)}条, 最新{d[-1]}"); return {'dates': d, 'lpr1y': l1, 'lpr5y': l5, 'lastUpdate': d[-1]}
-    except Exception as e: print(f"LPR失败: {e}")
+        df['TRADE_DATE_STR'] = df['TRADE_DATE'].apply(lambda x: str(x) if hasattr(x, 'isoformat') else str(x))
+        df = df[df['TRADE_DATE_STR'] >= '2024-01-01']
+        dates = df['TRADE_DATE_STR'].tolist()
+        lpr1y = [to_num(v) for v in col(df, 'LPR1Y')]
+        lpr5y = [to_num(v) for v in col(df, 'LPR5Y')]
+        if dates:
+            print(f"LPR获取成功: {len(dates)}条, 最新: {dates[-1]}")
+            return {'dates': dates, 'lpr1y': lpr1y, 'lpr5y': lpr5y, 'lastUpdate': dates[-1]}
+    except Exception as e:
+        print(f"LPR获取失败: {e}")
     return None
 
 def fetch_all_data():
