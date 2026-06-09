@@ -20,7 +20,15 @@ def clean_month(m):
     return '-'.join(parts)
 
 def col(df, name):
-    if name in df.columns: return df[name].tolist()
+    if name in df.columns:
+        vals = df[name].tolist()
+        # 如果值是 datetime.date 等非 JSON 可序列化类型，转字符串
+        for i, v in enumerate(vals):
+            if hasattr(v, 'isoformat'):
+                vals[i] = v.isoformat()
+            elif not isinstance(v, (int, float, str, bool, type(None))):
+                vals[i] = str(v)
+        return vals
     print(f"  列 '{name}' 不存在, 可用: {list(df.columns)}"); return []
 
 def to_num(v):
