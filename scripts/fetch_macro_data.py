@@ -118,14 +118,17 @@ def fetch_lpr():
         if not AKSHARE_AVAILABLE:
             return None
         df = ak.macro_china_lpr().sort_values('TRADE_DATE')
-        df['TRADE_DATE_STR'] = df['TRADE_DATE'].apply(lambda x: str(x) if hasattr(x, 'isoformat') else str(x))
-        df = df[df['TRADE_DATE_STR'] >= '2024-01-01']
-        dates = df['TRADE_DATE_STR'].tolist()
-        lpr1y = [to_num(v) for v in col(df, 'LPR1Y')]
-        lpr5y = [to_num(v) for v in col(df, 'LPR5Y')]
+        dates, l1, l5 = [], [], []
+        for _, row in df.iterrows():
+            d = row['TRADE_DATE']
+            ds = d.isoformat() if hasattr(d, 'isoformat') else str(d)
+            if ds >= '2024-01-01':
+                dates.append(ds)
+                l1.append(to_num(row.get('LPR1Y')))
+                l5.append(to_num(row.get('LPR5Y')))
         if dates:
             print(f"LPR获取成功: {len(dates)}条, 最新: {dates[-1]}")
-            return {'dates': dates, 'lpr1y': lpr1y, 'lpr5y': lpr5y, 'lastUpdate': dates[-1]}
+            return {'dates': dates, 'lpr1y': l1, 'lpr5y': l5, 'lastUpdate': dates[-1]}
     except Exception as e:
         print(f"LPR获取失败: {e}")
     return None
