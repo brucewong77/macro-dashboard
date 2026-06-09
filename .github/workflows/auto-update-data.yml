@@ -57,7 +57,7 @@ jobs:
       # Step 3: 安装 Python 依赖
       - name: 安装数据爬取依赖
         run: |
-          pip install akshare pandas -i https://pypi.tuna.tsinghua.edu.cn/simple
+          pip install akshare pandas
           echo "Python 依赖安装完成"
 
       # Step 4: 运行数据爬取脚本
