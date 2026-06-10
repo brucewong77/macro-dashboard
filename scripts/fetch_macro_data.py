@@ -32,7 +32,11 @@ def col(df, name):
     print(f"  列 '{name}' 不存在, 可用: {list(df.columns)}"); return []
 
 def to_num(v):
-    try: return float(v)
+    try:
+        x = float(v)
+        if x != x:  # NaN check
+            return None
+        return x
     except: return None
 
 def fetch_cpi():
