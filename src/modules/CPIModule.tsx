@@ -60,7 +60,7 @@ export function CPIModule() {
   const [detailView, setDetailView] = useState<'yoy' | 'mom'>('yoy');
 
   // 从远程加载AI点评
-  const [, setRemoteAnalysis] = useState<string | null>(null);
+  const [remoteAnalysis, setRemoteAnalysis] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     getCpiData().then(data => {
@@ -81,6 +81,13 @@ export function CPIModule() {
 
   return (
     <div className="space-y-4">
+      {/* 数据点评卡片 */}
+      {remoteAnalysis && (
+        <div className="bg-white border border-[#e2e8f0] rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-[#1e293b] mb-2">CPI 数据点评</h3>
+          <p className="text-sm text-[#475569] leading-relaxed">{remoteAnalysis}</p>
+        </div>
+      )}
       <ChartCard title="CPI同比" subtitle={`${drYoy.startStr} ~ ${drYoy.endStr} | ${DATA_SOURCES.cpi}`} dateRange={drYoy}>
         <ReactECharts option={{
           tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
