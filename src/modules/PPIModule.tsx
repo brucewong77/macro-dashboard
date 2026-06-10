@@ -78,8 +78,8 @@ function sortTableData(
 }
 
 export function PPIModule() {
-  const dr1 = useChartDateRange(2011, 1, 2026, 3);
-  const dr2 = useChartDateRange(2024, 4, 2026, 3);
+  const dr1 = useChartDateRange(2011, 1, 2026, 5);
+  const dr2 = useChartDateRange(2024, 4, 2026, 5);
   const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
   const [s2, e2] = useMemo(() => getIndexRange(months, dr2.startStr, dr2.endStr), [dr2.startStr, dr2.endStr]);
   const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);

@@ -7,7 +7,7 @@ import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
 
 export function RealEstateModule() {
-  const dr1 = useChartDateRange(2022, 4, 2026, 3);
+  const dr1 = useChartDateRange(2022, 4, 2026, 5);
   const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
   const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);
 

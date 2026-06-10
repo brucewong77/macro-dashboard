@@ -5,7 +5,7 @@ const MAX_YEAR = 2026;
 const YEARS = Array.from({ length: MAX_YEAR - MIN_YEAR + 1 }, (_, i) => MIN_YEAR + i);
 const MONTHS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
 
-export function useChartDateRange(defaultStartYear = 2025, defaultStartMonth = 5, defaultEndYear = 2026, defaultEndMonth = 4) {
+export function useChartDateRange(defaultStartYear = 2025, defaultStartMonth = 5, defaultEndYear = 2026, defaultEndMonth = 5) {
   const [startYear, setStartYear] = useState(defaultStartYear);
   const [startMonth, setStartMonth] = useState(defaultStartMonth);
   const [endYear, setEndYear] = useState(defaultEndYear);
@@ -15,11 +15,11 @@ export function useChartDateRange(defaultStartYear = 2025, defaultStartMonth = 5
   const endStr = useMemo(() => `${endYear}-${String(endMonth).padStart(2, '0')}`, [endYear, endMonth]);
 
   const presets = [
-    { label: '近1年', sy: 2025, sm: 5, ey: 2026, em: 4 },
-    { label: '近3年', sy: 2023, sm: 5, ey: 2026, em: 4 },
-    { label: '近5年', sy: 2021, sm: 5, ey: 2026, em: 4 },
-    { label: '近10年', sy: 2016, sm: 5, ey: 2026, em: 4 },
-    { label: '全部', sy: 2010, sm: 1, ey: 2026, em: 4 },
+    { label: '近1年', sy: 2025, sm: 5, ey: 2026, em: 5 },
+    { label: '近3年', sy: 2023, sm: 5, ey: 2026, em: 5 },
+    { label: '近5年', sy: 2021, sm: 5, ey: 2026, em: 5 },
+    { label: '近10年', sy: 2016, sm: 5, ey: 2026, em: 5 },
+    { label: '全部', sy: 2010, sm: 1, ey: 2026, em: 5 },
   ];
 
   const applyPreset = useCallback((label: string) => {

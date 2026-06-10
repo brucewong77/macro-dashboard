@@ -151,9 +151,96 @@ def fetch_all_data():
         if data: all_data[name] = data
     return all_data
 
+
+def generate_analysis(data):
+    """使用大模型API生成各指标点评"""
+    api_key = os.environ.get('LLM_API_KEY', '')
+    api_url = os.environ.get('LLM_API_URL', 'https://api.deepseek.com/v1/chat/completions')
+    model = os.environ.get('LLM_MODEL', 'deepseek-chat')
+    if not api_key:
+        print("未配置LLM_API_KEY，跳过AI点评生成")
+        return data
+
+    indicators = {
+        'cpi': 'CPI（居民消费价格指数）',
+        'ppi': 'PPI（工业生产者出厂价格指数）',
+        'pmi': '制造业PMI（采购经理指数）',
+        'industrial': '规模以上工业增加值',
+        'retail': '社会消费品零售总额',
+        'unemployment': '城镇调查失业率',
+        'fxReserve': '外汇储备',
+        'moneySupply': '货币供应量(M2)',
+        'gdp': 'GDP国内生产总值',
+    }
+
+    import urllib.request
+    import json as json_mod
+
+    for key, cname in indicators.items():
+        if key not in data:
+            continue
+        d = data[key]
+        print(f"正在为{cname}生成AI点评...")
+
+        # 构造数据摘要
+        if key == 'pmi':
+            vals = d.get('pmi', [])
+            months_list = d.get('months', [])
+        elif key == 'gdp':
+            vals = d.get('yoy', [])
+            months_list = d.get('quarters', [])
+        elif key == 'fxReserve':
+            vals = d.get('amount', [])
+            months_list = d.get('dates', [])
+        elif key == 'moneySupply':
+            vals = d.get('m2', [])
+            months_list = d.get('months', [])
+        else:
+            vals = d.get('yoy', [])
+            months_list = d.get('months', [])
+
+        if not vals or not months_list:
+            continue
+
+        # 取最近6期数据
+        recent = list(zip(months_list[-6:], vals[-6:]))
+        data_str = '、'.join([f"{m}: {v}" for m, v in recent if v is not None])
+
+        prompt = f"""你是一位宏观经济分析师。请对以下{cname}数据进行简要点评，控制在80字以内：
+{data_str}
+要求：用数据说话，指出趋势变化；只说确定的事实，不要预测；专业简洁。"""
+
+        try:
+            req_body = json_mod.dumps({
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 200,
+                "temperature": 0.3,
+            }).encode('utf-8')
+
+            req = urllib.request.Request(api_url, data=req_body,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {api_key}"
+                },
+                method='POST')
+
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                result = json_mod.loads(resp.read().decode('utf-8'))
+                analysis = result['choices'][0]['message']['content'].strip()
+                d['analysis'] = analysis
+                print(f"  ✓ 点评生成成功: {analysis[:50]}...")
+        except Exception as e:
+            print(f"  ✗ 点评生成失败: {e}")
+
+    return data
+
+
 def main():
     data = fetch_all_data()
-    with open(os.path.join(OUTPUT_DIR, 'macro_data.json'), 'w', encoding='utf-8') as f:
+    data = generate_analysis(data)
+    output_file = os.path.join(OUTPUT_DIR, 'macro_data.json')
+    with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     print(f"保存完成, 包含: {list(data.keys())}")
 

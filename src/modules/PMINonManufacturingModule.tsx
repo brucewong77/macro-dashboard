@@ -99,9 +99,9 @@ export function PMINonManufacturingModule() {
       },
       series: [{
         type: 'radar',
-        data: recent3M.map((ms, mi) => {
+        data: recent3M.map((ms: string, mi: number) => {
           const mIdx = months.indexOf(ms);
-          const values = pmiData.heatmapItems.map((_: string, i: number) => {
+          const values = pmiData.heatmapItems.map((_: any, i: number) => {
             const existing = pmiData.heatmapData.find((h: any) => h[0] === mIdx && h[1] === i);
             return existing ? existing[2] : 50;
           });

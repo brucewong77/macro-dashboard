@@ -62,8 +62,13 @@ jobs:
 
       # Step 4: 运行数据爬取脚本
       # ⚠️ 关键步骤：运行 Python 脚本，生成 public/data/macro_data.json
+      # 自动调用AI生成指标点评（需在仓库Secrets中配置 LLM_API_KEY）
       - name: 爬取最新宏观经济数据
         id: fetch
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_API_URL: ${{ secrets.LLM_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
         run: |
           python scripts/fetch_macro_data.py
           echo "=== 数据爬取结果 ==="

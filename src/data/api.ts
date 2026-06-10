@@ -38,16 +38,16 @@ const CACHE_TTL = 5 * 60 * 1000; // 5分钟缓存
 export interface MacroData {
   fetchTime: string;
   dataSource: string;
-  cpi?: { months: string[]; yoy: number[]; mom: number[]; lastUpdate: string | null };
-  ppi?: { months: string[]; yoy: number[]; mom: number[]; lastUpdate: string | null };
-  pmi?: { months: string[]; pmi: number[]; lastUpdate: string | null };
-  fxReserve?: { months: string[]; amount: number[]; lastUpdate: string | null };
-  moneySupply?: { months: string[]; m0: number[]; m1: number[]; m2: number[]; lastUpdate: string | null };
-  gdp?: { quarters: string[]; values: number[]; yoy: number[]; lastUpdate: string | null };
-  industrial?: { months: string[]; yoy: number[]; lastUpdate: string | null };
-  retail?: { months: string[]; yoy: number[]; lastUpdate: string | null };
-  unemployment?: { months: string[]; rate: number[]; lastUpdate: string | null };
-  lpr?: { dates: string[]; lpr1y: number[]; lpr5y: number[]; lastUpdate: string | null };
+  cpi?: { months: string[]; yoy: number[]; mom: number[]; lastUpdate: string | null; analysis?: string };
+  ppi?: { months: string[]; yoy: number[]; mom: number[]; lastUpdate: string | null; analysis?: string };
+  pmi?: { months: string[]; pmi: number[]; lastUpdate: string | null; analysis?: string };
+  fxReserve?: { months: string[]; amount: number[]; lastUpdate: string | null; analysis?: string };
+  moneySupply?: { months: string[]; m0: number[]; m1: number[]; m2: number[]; lastUpdate: string | null; analysis?: string };
+  gdp?: { quarters: string[]; values: number[]; yoy: number[]; lastUpdate: string | null; analysis?: string };
+  industrial?: { months: string[]; yoy: number[]; lastUpdate: string | null; analysis?: string };
+  retail?: { months: string[]; yoy: number[]; lastUpdate: string | null; analysis?: string };
+  unemployment?: { months: string[]; rate: number[]; lastUpdate: string | null; analysis?: string };
+  lpr?: { dates: string[]; lpr1y: number[]; lpr5y: number[]; lastUpdate: string | null; analysis?: string };
 }
 
 /**
@@ -90,6 +90,7 @@ export async function getCpiData() {
       ...mockCpi,
       yoy: cpi.months.map((m: string, i: number) => ({ month: m, value: cpi.yoy[i] ?? 0 })),
       mom: cpi.months.map((m: string, i: number) => ({ month: m, value: cpi.mom[i] ?? 0 })),
+      remoteAnalysis: cpi.analysis,
     };
   }
   return mockCpi;
@@ -107,6 +108,7 @@ export async function getPpiData() {
       ...mockPpi,
       yoy: ppi.months.map((m: string, i: number) => ({ month: m, value: ppi.yoy[i] ?? 0 })),
       mom: ppi.months.map((m: string, i: number) => ({ month: m, value: ppi.mom[i] ?? 0 })),
+      remoteAnalysis: ppi.analysis,
     };
   }
   return mockPpi;
@@ -124,7 +126,6 @@ export async function getPmiData() {
     const pmiValues = pmi.pmi;
     const pmiMonths = pmi.months;
 
-    // 按年份分组
     const byYear: Record<string, (number | null)[]> = {};
     pmiMonths.forEach((m: string, i: number) => {
       const year = m.split('-')[0];
@@ -133,7 +134,6 @@ export async function getPmiData() {
       byYear[year][monthIdx] = pmiValues[i];
     });
 
-    // 补齐34个月的数据格式
     Object.keys(byYear).forEach(year => {
       const arr = byYear[year];
       while (arr.length < 34) arr.push(0);
@@ -143,6 +143,7 @@ export async function getPmiData() {
     return {
       ...mockPmi,
       manufacturing: updatedManufacturing,
+      remoteAnalysis: pmi.analysis,
     };
   }
   return mockPmi;

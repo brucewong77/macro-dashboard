@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { useChartDateRange } from '../hooks/useChartDateRange';
 import { months, cpiData, getIndexRange } from '../data/economicData';
 import { cpiYoyReal, cpiMomReal, DATA_SOURCES } from '../data/realData';
+import { getCpiData } from '../data/api';
 import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
 
@@ -42,10 +43,10 @@ function generateTableData(items: string[], monthsArr: string[], viewType: 'yoy'
 }
 
 export function CPIModule() {
-  const drYoy = useChartDateRange(2011, 1, 2026, 3);
-  const drMom = useChartDateRange(2024, 4, 2026, 3);
-  const drCoreYoy = useChartDateRange(2011, 1, 2026, 3);
-  const drCoreMom = useChartDateRange(2024, 4, 2026, 3);
+  const drYoy = useChartDateRange(2011, 1, 2026, 5);
+  const drMom = useChartDateRange(2024, 4, 2026, 5);
+  const drCoreYoy = useChartDateRange(2011, 1, 2026, 5);
+  const drCoreMom = useChartDateRange(2024, 4, 2026, 5);
   const [sYoy, eYoy] = useMemo(() => getIndexRange(months, drYoy.startStr, drYoy.endStr), [drYoy.startStr, drYoy.endStr]);
   const [sMom, eMom] = useMemo(() => getIndexRange(months, drMom.startStr, drMom.endStr), [drMom.startStr, drMom.endStr]);
   const [sCoreYoy, eCoreYoy] = useMemo(() => getIndexRange(months, drCoreYoy.startStr, drCoreYoy.endStr), [drCoreYoy.startStr, drCoreYoy.endStr]);
@@ -57,6 +58,19 @@ export function CPIModule() {
 
   const [subView, setSubView] = useState<'yoy' | 'mom'>('yoy');
   const [detailView, setDetailView] = useState<'yoy' | 'mom'>('yoy');
+
+  // 从远程加载AI点评
+  const [, setRemoteAnalysis] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    getCpiData().then(data => {
+      if (!cancelled) {
+        const a = (data as any).remoteAnalysis;
+        if (a) setRemoteAnalysis(a);
+      }
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   const recentEnd = months.length;
   const recentStart = Math.max(recentEnd - 12, 0);

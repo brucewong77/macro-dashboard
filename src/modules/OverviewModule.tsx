@@ -4,7 +4,7 @@ import { months, cpiData, ppiData, pmiData, exportData, importData, retailData, 
 
 // 截至2026-06-08各指标最新发布月份
 const PUBLISHED_TO: Record<string, string> = {
-  'cpi': '2026-04', 'ppi': '2026-04', 'pmi': '2026-05', 'trade': '2026-05',
+  'cpi': '2026-04', 'ppi': '2026-04', 'pmi': '2026-05', 'trade': '2026-04',
   'retail': '2026-04', 'industrial': '2026-04', 'fai': '2026-04',
   'realestate': '2026-04', 'sf': '2026-04', 'fx': '2026-05',
   'unemployment': '2026-04', 'default': '2026-04',
@@ -15,25 +15,44 @@ function shouldShow(month: string, indicator: string): boolean {
   return month <= latest;
 }
 
-// 近12个月索引（时间最近的在最前面）
-function getLast12Months(): { index: number; month: string }[] {
-  const total = months.length;
+// 近12个月有效数据索引（最新月份为当前月份的上一个月）
+function getLast12WithData(): { index: number; month: string }[] {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 当前月份 1-12
+  // 最新月份 = 当前月份的上一个月
+  let latestYear = year;
+  let latestMonth = month - 1;
+  if (latestMonth <= 0) { latestYear = year - 1; latestMonth = 12; }
+  const latestStr = `${latestYear}-${String(latestMonth).padStart(2, '0')}`;
+
+  const latestIdx = months.indexOf(latestStr);
+  if (latestIdx === -1) {
+    // 如果找不到，fallback 到最后一个月
+    const total = months.length;
+    const result: { index: number; month: string }[] = [];
+    for (let i = total - 1; i >= Math.max(0, total - 12); i--) {
+      result.push({ index: i, month: months[i] });
+    }
+    return result;
+  }
+
   const result: { index: number; month: string }[] = [];
-  for (let i = total - 1; i >= Math.max(0, total - 12); i--) {
+  for (let i = latestIdx; i >= Math.max(0, latestIdx - 11); i--) {
     result.push({ index: i, month: months[i] });
   }
   return result;
 }
 
-// 读取数据的公共函数（跳过标志位0）
+// 读取数据的公共函数
 function getVal(arr: number[], idx: number): number | null {
   if (idx < 0 || idx >= arr.length) return null;
   const v = arr[idx];
   if (v === null || v === undefined) return null;
-  // 0 作为占位符表示未发布/无数据
-  if (v === 0) return null;
   return v;
 }
+
+// 获取显示值：已发布的显示真实数据(包括0)，未发布显示null
 
 // 纯 SVG 迷你折线图 - 无需 echarts，首屏立即可渲染
 // 每个指标使用自己的纵坐标范围，尽可能体现波动
@@ -130,7 +149,7 @@ function OverviewCharts() {
 }
 
 function DataTable({ isYoy }: { isYoy: boolean }) {
-  const last12 = useMemo(() => getLast12Months(), []);
+  const last12 = useMemo(() => getLast12WithData(), []);
 
   // 同比指标
   const yoyRows = [
@@ -177,21 +196,64 @@ function DataTable({ isYoy }: { isYoy: boolean }) {
           {rows.map((row, ri) => (
             <tr key={row.label} className={`border-b border-[#f1f5f9] ${ri % 2 === 1 ? 'bg-[#fafbfc]' : ''}`}>
               <td className={`${cellClass} text-left font-medium text-[#1e293b] sticky left-0 ${ri % 2 === 1 ? 'bg-[#fafbfc]' : 'bg-white'} z-10`}>{row.label}</td>
-              {last12.map(({ index, month }) => {
+              {last12.map(({ index, month }, ci) => {
                 const raw = getVal(row.data, index);
                 const show = shouldShow(month, row.indicator);
-                const display = raw !== null && show ? raw.toFixed(1) + (row.label === '制造业PMI' ? '' : '%') : (raw === null ? '—' : '未发布');
-                const isPositive = raw !== null && raw > 0;
-                const isPMI = row.label === '制造业PMI';
+                const display = raw !== null && show ? raw.toFixed(1) + (row.label === '制造业PMI' ? '' : '%') : '未发布';
+
+                if (display === '未发布' || display === '—') {
+                  return (
+                    <td key={month} className={`${cellClass} text-right ${display === '未发布' ? 'text-[#94a3b8]' : 'text-[#cbd5e1]'}`}>
+                      {display}
+                    </td>
+                  );
+                }
+
+                // 最左列（最新月份）：保持原来的样式——跟最右侧(ci=11)索引值比较，变大红变小绿，带箭头，不变黑色
+                if (ci === 0) {
+                  let arrow = '';
+                  let colorClass = 'text-[#1e293b]';
+                  const prevIdx = last12[1]?.index;
+                  if (prevIdx !== undefined) {
+                    const prevRaw = getVal(row.data, prevIdx);
+                    if (prevRaw !== null) {
+                      if (raw! > prevRaw) { colorClass = 'text-[#ef4444]'; arrow = ' ↑'; }
+                      else if (raw! < prevRaw) { colorClass = 'text-[#22c55e]'; arrow = ' ↓'; }
+                    }
+                  }
+                  return (
+                    <td key={month} className={`${cellClass} text-right ${colorClass}`}>
+                      {display}{arrow && <span>{arrow}</span>}
+                    </td>
+                  );
+                }
+
+                // 最右列（最远月份）：黑色
+                if (ci === last12.length - 1) {
+                  return (
+                    <td key={month} className={`${cellClass} text-right text-[#1e293b]`}>
+                      {display}
+                    </td>
+                  );
+                }
+
+                // 中间列：对比左边列（前一个月，即索引小的方向），变大红变小绿
+                // 注意：last12 时间从左到右递减，左边(ci+1)是更早的月份
+                // 对比"前一个月"：ci 对比 ci+1（它的右边）
                 let colorClass = 'text-[#1e293b]';
-                if (raw !== null && !isPMI) {
-                  colorClass = isPositive ? 'text-[#ef4444]' : 'text-[#22c55e]';
+                if (raw !== null && show) {
+                  const prevIdx = last12[ci + 1]?.index;
+                  if (prevIdx !== undefined) {
+                    const prevRaw = getVal(row.data, prevIdx);
+                    if (prevRaw !== null) {
+                      if (raw > prevRaw) colorClass = 'text-[#ef4444]';
+                      else if (raw < prevRaw) colorClass = 'text-[#22c55e]';
+                    }
+                  }
                 }
-                if (isPMI && raw !== null) {
-                  colorClass = raw >= 50 ? 'text-[#22c55e]' : 'text-[#ef4444]';
-                }
+
                 return (
-                  <td key={month} className={`${cellClass} text-right ${display === '未发布' ? 'text-[#94a3b8]' : display === '—' ? 'text-[#cbd5e1]' : colorClass}`}>
+                  <td key={month} className={`${cellClass} text-right ${colorClass}`}>
                     {display}
                   </td>
                 );
@@ -221,12 +283,7 @@ export function OverviewModule() {
         <DataTable isYoy={true} />
       </ChartCard>
 
-      {/* 第三个模块：近12个月环比变化表格 */}
-      <ChartCard title="近12个月主要指标环比变化情况">
-        <DataTable isYoy={false} />
-      </ChartCard>
-
-      {/* 第四个模块：近12个月指标趋势（纯 SVG，无需 echarts） */}
+      {/* 第三个模块：近12个月指标趋势（纯 SVG，无需 echarts） */}
       <ChartCard title="近12个月主要指标同比增速趋势">
         <OverviewCharts />
       </ChartCard>
