@@ -88,6 +88,17 @@ export function CPIModule() {
           <p className="text-sm text-[#475569] leading-relaxed">{remoteAnalysis}</p>
         </div>
       )}
+      {/* 指标说明 - 页面最上方 */}
+      <IndicatorExplanation
+        title="CPI（居民消费价格指数）指标说明"
+        items={[
+          { label: '指标定义', content: 'CPI是反映居民家庭购买消费商品及服务价格水平变动情况的指数，是衡量通货膨胀的主要指标。' },
+          { label: '计算方式', content: '采用定基指数，基期为2020年=100，涵盖食品烟酒、衣着、居住、生活用品等8大类268个基本分类。' },
+          { label: '数据来源', content: '国家统计局（www.stats.gov.cn），每月9日公布上月数据。' },
+          { label: '指标意义', content: 'CPI同比>3%提示通胀压力，<1%提示通缩风险。核心CPI（剔除食品和能源）更能反映长期通胀趋势。' },
+        ]}
+      />
+
       <ChartCard title="CPI同比" subtitle={`${drYoy.startStr} ~ ${drYoy.endStr} | ${DATA_SOURCES.cpi}`} dateRange={drYoy}>
         <ReactECharts option={{
           tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
@@ -190,19 +201,6 @@ export function CPIModule() {
     </div>
   );
 }
-
-
-      <div className="mt-4">
-        <IndicatorExplanation
-          title="CPI（居民消费价格指数）指标说明"
-          items={[
-            { label: '指标定义', content: 'CPI是反映居民家庭购买消费商品及服务价格水平变动情况的指数，是衡量通货膨胀的主要指标。' },
-            { label: '计算方式', content: '采用定基指数，基期为2020年=100，涵盖食品烟酒、衣着、居住、生活用品等8大类268个基本分类。' },
-            { label: '数据来源', content: '国家统计局（www.stats.gov.cn），每月9日公布上月数据。' },
-            { label: '指标意义', content: 'CPI同比>3%提示通胀压力，<1%提示通缩风险。核心CPI（剔除食品和能源）更能反映长期通胀趋势。' },
-          ]}
-        />
-      </div>
 
 
 export default CPIModule;

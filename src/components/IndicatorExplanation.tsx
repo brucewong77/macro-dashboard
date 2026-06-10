@@ -12,7 +12,7 @@ interface IndicatorExplanationProps {
 }
 
 export function IndicatorExplanation({ title, items }: IndicatorExplanationProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   return (
     <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg overflow-hidden">
