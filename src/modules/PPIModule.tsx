@@ -164,6 +164,17 @@ export function PPIModule() {
 
   return (
     <div className="space-y-4">
+      {/* 指标说明 - 放在页面最上方 */}
+      <IndicatorExplanation
+        title="PPI（工业生产者出厂价格指数）指标说明"
+        items={[
+          { label: '指标定义', content: 'PPI是衡量工业企业产品出厂价格变动趋势和程度的指数，反映生产领域价格变动情况。' },
+          { label: '计算方式', content: '通过全国5万余家工业企业调查，采用拉氏指数公式计算，基期为2010年。' },
+          { label: '数据来源', content: '国家统计局（www.stats.gov.cn），每月9-10日公布上月数据。' },
+          { label: '指标意义', content: 'PPI是通胀先行指标，上游价格变化会传导至CPI。持续负增长可能预示通缩压力。' },
+        ]}
+      />
+
       {/* PPI同比 */}
       <ChartCard title="PPI同比" subtitle={`${dr1.startStr} ~ ${dr1.endStr} | ${DATA_SOURCES.ppi}`} dateRange={dr1}>
         <ReactECharts option={{
@@ -245,17 +256,6 @@ export function PPIModule() {
           <HeatTable rows={sortedIndustryTable} />
         </div>
       </div>
-
-      {/* 指标说明 */}
-      <IndicatorExplanation
-        title="PPI（工业生产者出厂价格指数）指标说明"
-        items={[
-          { label: '指标定义', content: 'PPI是衡量工业企业产品出厂价格变动趋势和程度的指数，反映生产领域价格变动情况。' },
-          { label: '计算方式', content: '通过全国5万余家工业企业调查，采用拉氏指数公式计算，基期为2010年。' },
-          { label: '数据来源', content: '国家统计局（www.stats.gov.cn），每月9-10日公布上月数据。' },
-          { label: '指标意义', content: 'PPI是通胀先行指标，上游价格变化会传导至CPI。持续负增长可能预示通缩压力。' },
-        ]}
-      />
     </div>
   );
 }
