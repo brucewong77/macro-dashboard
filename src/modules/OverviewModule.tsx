@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { months, cpiData, ppiData, pmiData, exportData, importData, retailData, industrialData, faiData, realestateData, getIndexRange } from '../data/economicData';
 
-// 截至2026-06-08各指标最新发布月份
+// 截至2026-06-10各指标最新发布月份
 const PUBLISHED_TO: Record<string, string> = {
-  'cpi': '2026-04', 'ppi': '2026-04', 'pmi': '2026-05', 'trade': '2026-04',
-  'retail': '2026-04', 'industrial': '2026-04', 'fai': '2026-04',
-  'realestate': '2026-04', 'sf': '2026-04', 'fx': '2026-05',
-  'unemployment': '2026-04', 'default': '2026-04',
+  'cpi': '2026-05', 'ppi': '2026-05', 'pmi': '2026-05', 'trade': '2026-05',
+  'retail': '2026-05', 'industrial': '2026-05', 'fai': '2026-04',
+  'realestate': '2026-04', 'sf': '2026-05', 'fx': '2026-05',
+  'unemployment': '2026-05', 'default': '2026-04',
 };
 
 function shouldShow(month: string, indicator: string): boolean {
