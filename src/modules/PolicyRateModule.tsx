@@ -1,10 +1,11 @@
 import { useMemo, useState, useCallback } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { useChartDateRange } from '../hooks/useChartDateRange';
-import { months, rateData, getIndexRange } from '../data/economicData';
+import { months, rateData, getIndexRange, blankUnpublished } from '../data/economicData';
 import { dailyRateData } from '../data/dailyRateData';
 import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
+import { WindIdHover } from '../components/WindIdHover';
 
 
 // 日频数据日期范围选择 hook
@@ -72,6 +73,11 @@ export function PolicyRateModule() {
   const dr1 = useChartDateRange();
   const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
   const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);
+  const rateMlfData = useMemo(() => blankUnpublished(fm1, rateData.mlfRate.slice(s1, e1), 'sf'), [fm1, s1, e1]);
+  const rateLpr1yData = useMemo(() => blankUnpublished(fm1, rateData.lpr1y.slice(s1, e1), 'sf'), [fm1, s1, e1]);
+  const rateLpr5yData = useMemo(() => blankUnpublished(fm1, rateData.lpr5y.slice(s1, e1), 'sf'), [fm1, s1, e1]);
+  const rateRepo7dData = useMemo(() => blankUnpublished(fm1, rateData.repo7d.slice(s1, e1), 'sf'), [fm1, s1, e1]);
+  const rateRepo14dData = useMemo(() => blankUnpublished(fm1, rateData.repo14d.slice(s1, e1), 'sf'), [fm1, s1, e1]);
 
   const daily = useDailyDateRange();
 
@@ -186,7 +192,7 @@ export function PolicyRateModule() {
 
   return (
     <div className="space-y-4">
-      <ChartCard title="政策利率走势" dateRange={dr1}>
+      <ChartCard title={<span>政策利率走势 <WindIdHover id="M1001578">MLF</WindIdHover> <WindIdHover id="M0172891">1年LPR</WindIdHover> <WindIdHover id="M0172892">5年LPR</WindIdHover></span>} dateRange={dr1}>
         <ReactECharts option={{
           tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
           legend: { data: ['MLF利率', '1年LPR', '5年LPR', '7天逆回购', '14天逆回购'], top: 5, textStyle: { color: '#64748b', fontSize: 10 }, type: 'scroll' as const },
@@ -194,11 +200,11 @@ export function PolicyRateModule() {
           xAxis: { type: 'category', data: fm1, axisLabel: { color: '#64748b', fontSize: 10, rotate: 30 }, axisLine: { lineStyle: { color: '#e2e8f0' } } },
           yAxis: { type: 'value', name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 }, min: 0, max: 5, axisLabel: { color: '#94a3b8', fontSize: 10 }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' as const } } },
           series: [
-            { name: 'MLF利率', type: 'line', data: rateData.mlfRate.slice(s1, e1), lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' }, symbol: 'circle', symbolSize: 3 },
-            { name: '1年LPR', type: 'line', data: rateData.lpr1y.slice(s1, e1), lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, symbol: 'circle', symbolSize: 3 },
-            { name: '5年LPR', type: 'line', data: rateData.lpr5y.slice(s1, e1), lineStyle: { color: '#22c55e', width: 2 }, itemStyle: { color: '#22c55e' }, symbol: 'circle', symbolSize: 3 },
-            { name: '7天逆回购', type: 'line', data: rateData.repo7d.slice(s1, e1), lineStyle: { color: '#f59e0b', width: 2 }, itemStyle: { color: '#f59e0b' }, symbol: 'circle', symbolSize: 3 },
-            { name: '14天逆回购', type: 'line', data: rateData.repo14d.slice(s1, e1), lineStyle: { color: '#8b5cf6', width: 2 }, itemStyle: { color: '#8b5cf6' }, symbol: 'circle', symbolSize: 3 },
+            { name: 'MLF利率', type: 'line', data: rateMlfData, lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' }, symbol: 'circle', symbolSize: 3 },
+            { name: '1年LPR', type: 'line', data: rateLpr1yData, lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, symbol: 'circle', symbolSize: 3 },
+            { name: '5年LPR', type: 'line', data: rateLpr5yData, lineStyle: { color: '#22c55e', width: 2 }, itemStyle: { color: '#22c55e' }, symbol: 'circle', symbolSize: 3 },
+            { name: '7天逆回购', type: 'line', data: rateRepo7dData, lineStyle: { color: '#f59e0b', width: 2 }, itemStyle: { color: '#f59e0b' }, symbol: 'circle', symbolSize: 3 },
+            { name: '14天逆回购', type: 'line', data: rateRepo14dData, lineStyle: { color: '#8b5cf6', width: 2 }, itemStyle: { color: '#8b5cf6' }, symbol: 'circle', symbolSize: 3 },
           ],
           animationDuration: 500,
         }} style={{ height: 400 }} />

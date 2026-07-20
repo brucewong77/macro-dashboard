@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { useChartDateRange } from '../hooks/useChartDateRange';
-import { months, unemploymentData, getIndexRange } from '../data/economicData';
+import { months, unemploymentData, getIndexRange, blankUnpublished } from '../data/economicData';
 import { DATA_SOURCES } from '../data/realData';
 import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
@@ -10,6 +10,9 @@ export function UnemploymentModule() {
   const dr1 = useChartDateRange();
   const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
   const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);
+  const unempNatlData = useMemo(() => blankUnpublished(fm1, unemploymentData.national.slice(s1, e1), 'unemployment'), [fm1, s1, e1]);
+  const unempYouthData = useMemo(() => blankUnpublished(fm1, unemploymentData.byAge.youth.slice(s1, e1), 'unemployment'), [fm1, s1, e1]);
+  const unempPrimeData = useMemo(() => blankUnpublished(fm1, unemploymentData.byAge.prime.slice(s1, e1), 'unemployment'), [fm1, s1, e1]);
 
   const nationalSlice = unemploymentData.national.slice(s1, e1).filter((v): v is number => v !== null);
   const primeSlice = unemploymentData.byAge.prime.slice(s1, e1).filter((v): v is number => v !== null);
@@ -29,9 +32,9 @@ export function UnemploymentModule() {
           xAxis: { type: 'category', data: fm1, axisLabel: { color: '#64748b', fontSize: 10, rotate: 30 }, axisLine: { lineStyle: { color: '#e2e8f0' } } },
           yAxis: { type: 'value', min: yMin1, max: yMax1, name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 }, axisLabel: { color: '#94a3b8', fontSize: 10 }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' as const } } },
           series: [
-            { name: '全国', type: 'line', data: unemploymentData.national.slice(s1, e1), smooth: true, lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, symbol: 'circle', symbolSize: 3 },
-            { name: '16-24岁', type: 'line', data: unemploymentData.byAge.youth.slice(s1, e1), smooth: true, lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' }, symbol: 'circle', symbolSize: 3 },
-            { name: '25-59岁', type: 'line', data: unemploymentData.byAge.prime.slice(s1, e1), smooth: true, lineStyle: { color: '#22c55e', width: 2 }, itemStyle: { color: '#22c55e' }, symbol: 'circle', symbolSize: 3 },
+            { name: '全国', type: 'line', data: unempNatlData, smooth: true, lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, symbol: 'circle', symbolSize: 3 },
+            { name: '16-24岁', type: 'line', data: unempYouthData, smooth: true, lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' }, symbol: 'circle', symbolSize: 3 },
+            { name: '25-59岁', type: 'line', data: unempPrimeData, smooth: true, lineStyle: { color: '#22c55e', width: 2 }, itemStyle: { color: '#22c55e' }, symbol: 'circle', symbolSize: 3 },
           ],
           animationDuration: 500,
         }} style={{ height: 380 }} />

@@ -17,7 +17,7 @@ interface DateRange {
 }
 
 interface ChartCardProps {
-  title: string;
+  title: ReactNode;
   subtitle?: string;
   children: ReactNode;
   className?: string;

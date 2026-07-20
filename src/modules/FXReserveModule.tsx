@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { useChartDateRange } from '../hooks/useChartDateRange';
-import { months, fxReserveData, getIndexRange } from '../data/economicData';
+import { months, fxReserveData, getIndexRange, blankUnpublished } from '../data/economicData';
 import { DATA_SOURCES } from '../data/realData';
 import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
@@ -10,6 +10,7 @@ export function FXReserveModule() {
   const dr1 = useChartDateRange();
   const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
   const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);
+  const fxYoyData = useMemo(() => blankUnpublished(fm1, fxReserveData.yoy.slice(s1, e1), 'fx'), [fm1, s1, e1]);
   const amountSlice = fxReserveData.amount.slice(s1, e1);
   const minAmount = Math.min(...amountSlice);
   const maxAmount = Math.max(...amountSlice);

@@ -8,6 +8,7 @@ export function TopBar() {
 
   const moduleNameMap: Record<string, string> = {
     'overview': '数据概览',
+    'gdp': 'GDP',
     'ppi': 'PPI',
     'cpi': 'CPI',
     'pmi-mfg': '制造业PMI',
@@ -17,13 +18,12 @@ export function TopBar() {
     'fx-reserve': '外汇储备',
     'export': '出口',
     'import': '进口',
-    'retail': '社零增加值',
+    'retail': '社零情况',
     'income': '居民可支配收入',
-    'unemployment': '城镇失业率',
     'fai': '固定投资增速',
     'realestate': '地产数据',
     'social-financing': '社融',
-    'credit': '信贷',
+    'credit': '存款和杠杆',
     'policy-rate': '政策利率',
     'money-supply': '资金活力',
     'deposit': '存款',

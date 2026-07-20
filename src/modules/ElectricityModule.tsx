@@ -1,86 +1,177 @@
 import { useMemo } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { useChartDateRange } from '../hooks/useChartDateRange';
-import { months, electricityData, getIndexRange } from '../data/economicData';
+import { getPrevMonthStr, months } from '../data/economicData';
 import { DATA_SOURCES } from '../data/realData';
+import {
+  elec全社会_累计同比, elec全社会_当月同比, elec全社会_用电量,
+  elec一产_当月同比, elec二产_当月同比, elec三产_当月同比,
+  elec一产_用电量, elec二产_用电量, elec三产_用电量,
+} from '../data/electricityExcelData';
 import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
+import { WindIdHover } from '../components/WindIdHover';
+
+/* ─── 助函数 ─── */
+function round(v: number | null | undefined): number | null {
+  if (v === null || v === undefined) return null;
+  return Math.round(v * 10) / 10;
+}
 
 export function ElectricityModule() {
-  const dr1 = useChartDateRange(2024, 4, 2026, 5);
-  const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
-  const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);
+  const cy = Number(getPrevMonthStr().slice(0, 4));
+  const lm = Number(getPrevMonthStr().slice(5, 7));
 
-  // 近12个月用于表格
-  const recentEnd = months.length;
-  const recentStart = Math.max(recentEnd - 12, 0);
-  const recentMonths = useMemo(() => months.slice(recentStart, recentEnd), []);
+  // 0. 当月同比折线图（1-12月, 2024/2025/2026）
+  const momOption = useMemo(() => {
+    const years = [cy, cy - 1, cy - 2];
+    const colors = ['#ef4444', '#3b82f6', '#94a3b8'];
+    return {
+      tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
+      legend: { data: years.map(y => `${y}年`), top: 5, textStyle: { color: '#64748b', fontSize: 11 } },
+      grid: { top: 40, right: 30, bottom: 30, left: 50 },
+      xAxis: { type: 'category', data: Array.from({ length: 12 }, (_, i) => `${i + 1}月`), axisLabel: { color: '#64748b', fontSize: 10 } },
+      yAxis: { type: 'value', name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 } },
+      series: years.map((y, yi) => ({
+        name: `${y}年`, type: 'line' as const,
+        data: Array.from({ length: 12 }, (_, i) => {
+          if (i + 1 > lm && y === cy) return null;
+          const ms = `${y}-${String(i + 1).padStart(2, '0')}`;
+          return round(elec全社会_当月同比.values[ms]) ?? null;
+        }),
+        lineStyle: { color: colors[yi], width: yi === 0 ? 2.5 : yi === 1 ? 2 : 1.5, type: yi === 2 ? 'dashed' as const : 'solid' as const },
+        itemStyle: { color: colors[yi] },
+        symbol: 'circle', symbolSize: yi === 0 ? 5 : 4,
+        label: yi === 0 ? { show: true, color: '#ef4444', fontSize: 9, fontWeight: 'bold', position: 'top' } : undefined,
+      })),
+      animationDuration: 500,
+    };
+  }, [cy, lm]);
+
+  // 1. 累计增速折线图（1-12月, 2024/2025/2026）
+  const cumOption = useMemo(() => {
+    const years = [cy, cy - 1, cy - 2];
+    const colors = ['#ef4444', '#3b82f6', '#94a3b8'];
+    return {
+      tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
+      legend: { data: years.map(y => `${y}年`), top: 5, textStyle: { color: '#64748b', fontSize: 11 } },
+      grid: { top: 40, right: 30, bottom: 30, left: 50 },
+      xAxis: { type: 'category', data: Array.from({ length: 12 }, (_, i) => `${i + 1}月`), axisLabel: { color: '#64748b', fontSize: 10 } },
+      yAxis: { type: 'value', name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 } },
+      series: years.map((y, yi) => ({
+        name: `${y}年`, type: 'line' as const,
+        data: Array.from({ length: 12 }, (_, i) => {
+          if (i + 1 > lm && y === cy) return null;
+          const ms = `${y}-${String(i + 1).padStart(2, '0')}`;
+          return round(elec全社会_累计同比.values[ms]) ?? null;
+        }),
+        lineStyle: { color: colors[yi], width: yi === 0 ? 2.5 : yi === 1 ? 2 : 1.5, type: yi === 2 ? 'dashed' as const : 'solid' as const },
+        itemStyle: { color: colors[yi] },
+        symbol: 'circle', symbolSize: yi === 0 ? 5 : 4,
+        label: yi === 0 ? { show: true, color: '#ef4444', fontSize: 9, fontWeight: 'bold', position: 'top' } : undefined,
+      })),
+      animationDuration: 500,
+    };
+  }, [cy, lm]);
+
+  // 2. 一二三产业堆积柱状图（近两年，可选时间段）
+  const drStack = useChartDateRange(cy - 1, 1);
+  const stackOption = useMemo(() => {
+    const allMonths = months.filter(m => m >= drStack.startStr && m <= drStack.endStr);
+    const filtered = allMonths.filter(m => elec一产_用电量.values[m] != null);
+    const stackData1 = filtered.map(m => round(elec一产_用电量.values[m] ? elec一产_用电量.values[m]! / 10000 : null));
+    const stackData2 = filtered.map(m => round(elec二产_用电量.values[m] ? elec二产_用电量.values[m]! / 10000 : null));
+    const stackData3 = filtered.map(m => round(elec三产_用电量.values[m] ? elec三产_用电量.values[m]! / 10000 : null));
+    // "其他" = 全社会用电量 - 一二三产差值
+    const stackDataOther = filtered.map(m => {
+      const total = elec全社会_用电量.values[m];
+      const one = elec一产_用电量.values[m];
+      const two = elec二产_用电量.values[m];
+      const three = elec三产_用电量.values[m];
+      if (total == null || one == null || two == null || three == null) return null;
+      const diff = (total - one - two - three) / 10000;
+      return diff > 0 ? round(diff) : null;
+    });
+    return {
+      tooltip: {
+        trigger: 'axis' as const,
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        borderColor: '#e2e8f0',
+        textStyle: { color: '#1e293b' },
+        formatter: (params: any) => {
+          if (!Array.isArray(params)) return '';
+          const total = params.reduce((sum: number, p: any) => sum + (p.value ?? 0), 0);
+          let html = `<div style="font-weight:bold;margin-bottom:4px">${params[0].axisValue}</div>`;
+          params.forEach((p: any) => {
+            const pct = total > 0 ? ((p.value ?? 0) / total * 100).toFixed(1) : '0.0';
+            html += `<div style="display:flex;justify-content:space-between;gap:16px">
+              <span>${p.marker} ${p.seriesName}</span>
+              <span style="font-weight:bold">${p.value?.toFixed(1) ?? '-'} 亿千瓦时（${pct}%）</span>
+            </div>`;
+          });
+          html += `<div style="border-top:1px solid #e2e8f0;margin-top:4px;padding-top:4px;font-weight:bold">合计: ${total.toFixed(1)} 亿千瓦时</div>`;
+          return html;
+        },
+      },
+      legend: { data: ['第一产业', '第二产业', '第三产业', '其他'], top: 5, textStyle: { color: '#64748b', fontSize: 11 } },
+      grid: { top: 40, right: 30, bottom: 30, left: 60 },
+      xAxis: { type: 'category', data: filtered, axisLabel: { color: '#64748b', fontSize: 9, rotate: 30 } },
+      yAxis: { type: 'value', name: '亿千瓦时', nameTextStyle: { color: '#94a3b8', fontSize: 10 } },
+      series: [
+        { name: '第一产业', type: 'bar' as const, stack: 'total', data: stackData1, itemStyle: { color: '#22c55e', borderRadius: [0, 0, 0, 0] }, barWidth: '60%', label: { show: true, position: 'inside', fontSize: 8, color: '#fff', formatter: (p: any) => { const idx = p.dataIndex; const total = (stackData1[idx] ?? 0) + (stackData2[idx] ?? 0) + (stackData3[idx] ?? 0) + (stackDataOther[idx] ?? 0); return total > 0 && (stackData1[idx] ?? 0) / total > 0.05 ? ((stackData1[idx] ?? 0) / total * 100).toFixed(1) + '%' : ''; } } },
+        { name: '第二产业', type: 'bar' as const, stack: 'total', data: stackData2, itemStyle: { color: '#3b82f6' }, label: { show: true, position: 'inside', fontSize: 9, color: '#fff', formatter: (p: any) => { const idx = p.dataIndex; const total = (stackData1[idx] ?? 0) + (stackData2[idx] ?? 0) + (stackData3[idx] ?? 0) + (stackDataOther[idx] ?? 0); return total > 0 && (stackData2[idx] ?? 0) / total > 0.05 ? ((stackData2[idx] ?? 0) / total * 100).toFixed(1) + '%' : ''; } } },
+        { name: '第三产业', type: 'bar' as const, stack: 'total', data: stackData3, itemStyle: { color: '#f59e0b' }, label: { show: true, position: 'inside', fontSize: 8, color: '#fff', formatter: (p: any) => { const idx = p.dataIndex; const total = (stackData1[idx] ?? 0) + (stackData2[idx] ?? 0) + (stackData3[idx] ?? 0) + (stackDataOther[idx] ?? 0); return total > 0 && (stackData3[idx] ?? 0) / total > 0.05 ? ((stackData3[idx] ?? 0) / total * 100).toFixed(1) + '%' : ''; } } },
+        { name: '其他', type: 'bar' as const, stack: 'total', data: stackDataOther, itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] } },
+      ],
+      animationDuration: 500,
+    };
+  }, [drStack.startStr, drStack.endStr, cy]);
+
+  // 3. 分产业当月同比柱状图（近一年，可选时间段）
+  const drYoy = useChartDateRange(cy - 1, 1);
+  const yoyOption = useMemo(() => {
+    const allMonths = months.filter(m => m >= drYoy.startStr && m <= drYoy.endStr);
+    const filtered = allMonths.filter(m => elec一产_当月同比.values[m] != null);
+    return {
+      tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
+      legend: { data: ['第一产业', '第二产业', '第三产业'], top: 5, textStyle: { color: '#64748b', fontSize: 11 } },
+      grid: { top: 40, right: 30, bottom: 30, left: 50 },
+      xAxis: { type: 'category', data: filtered, axisLabel: { color: '#64748b', fontSize: 9, rotate: 30 } },
+      yAxis: { type: 'value', name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 } },
+      series: [
+        { name: '第一产业', type: 'bar' as const, data: filtered.map(m => round(elec一产_当月同比.values[m])), itemStyle: { color: '#22c55e', borderRadius: [3, 3, 0, 0] }, barWidth: '25%', barGap: '10%' },
+        { name: '第二产业', type: 'bar' as const, data: filtered.map(m => round(elec二产_当月同比.values[m])), itemStyle: { color: '#3b82f6', borderRadius: [3, 3, 0, 0] }, barWidth: '25%' },
+        { name: '第三产业', type: 'bar' as const, data: filtered.map(m => round(elec三产_当月同比.values[m])), itemStyle: { color: '#f59e0b', borderRadius: [3, 3, 0, 0] }, barWidth: '25%' },
+      ],
+      animationDuration: 500,
+    };
+  }, [drYoy.startStr, drYoy.endStr, cy]);
 
   return (
     <div className="space-y-4">
-      {/* 全社会用电量总量 */}
-      <ChartCard title="全社会用电量" subtitle={`${dr1.startStr} ~ ${dr1.endStr} | ${DATA_SOURCES.electricity}`} dateRange={dr1}>
-        <ReactECharts option={{
-          tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
-          grid: { top: 10, right: 20, bottom: 30, left: 60 },
-          xAxis: { type: 'category', data: fm1, axisLabel: { color: '#64748b', fontSize: 10, rotate: 30 }, axisLine: { lineStyle: { color: '#e2e8f0' } } },
-          yAxis: { type: 'value', name: '亿千瓦时', nameTextStyle: { color: '#94a3b8', fontSize: 10 }, axisLabel: { color: '#94a3b8', fontSize: 10 }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' as const } } },
-          series: [{ type: 'line', data: electricityData.total.slice(s1, e1), smooth: true, lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(59,130,246,0.15)' }, { offset: 1, color: 'rgba(59,130,246,0)' }] } }, symbol: 'circle', symbolSize: 3 }],
-          animationDuration: 500,
-        }} style={{ height: 380 }} />
+      {/* 0. 全社会用电量当月同比 */}
+      <ChartCard title={<WindIdHover id="S5100122">全社会用电量当月同比（{cy} vs {cy - 1} vs {cy - 2}）</WindIdHover>}>
+        <p className="text-[10px] text-[#94a3b8] mb-2">数据来源：Wind（来源：社会用电量.xlsx）</p>
+        <ReactECharts option={momOption} style={{ height: 380 }} />
       </ChartCard>
 
-      {/* 用电量同比增速 */}
-      <ChartCard title="全社会用电量同比增速" subtitle={`${dr1.startStr} ~ ${dr1.endStr} | ${DATA_SOURCES.electricity}`} dateRange={dr1}>
-        <ReactECharts option={{
-          tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
-          grid: { top: 10, right: 20, bottom: 30, left: 50 },
-          xAxis: { type: 'category', data: fm1, axisLabel: { color: '#64748b', fontSize: 10, rotate: 30 }, axisLine: { lineStyle: { color: '#e2e8f0' } } },
-          yAxis: { type: 'value', name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 }, axisLabel: { color: '#94a3b8', fontSize: 10 }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' as const } } },
-          series: [
-            { type: 'line', data: electricityData.yoy.slice(s1, e1), smooth: true, lineStyle: { color: '#f59e0b', width: 2 }, itemStyle: { color: '#f59e0b' }, symbol: 'circle', symbolSize: 3 },
-          ],
-          animationDuration: 500,
-        }} style={{ height: 360 }} />
+      {/* 1. 全社会用电量累计增速 */}
+      <ChartCard title={<WindIdHover id="S0048397">全社会用电量累计增速（{cy} vs {cy - 1} vs {cy - 2}）</WindIdHover>}>
+        <p className="text-[10px] text-[#94a3b8] mb-2">数据来源：Wind（来源：社会用电量.xlsx）</p>
+        <ReactECharts option={cumOption} style={{ height: 380 }} />
       </ChartCard>
 
-      {/* 分产业用电量同比增速表格 */}
-      <div className="bg-white border border-[#e2e8f0] rounded-lg overflow-hidden hover:border-[#cbd5e1] hover:shadow-md transition-all">
-        <div className="px-4 py-2.5 border-b border-[#f1f5f9]">
-          <h3 className="text-sm font-semibold text-[#1e293b]">分产业用电量同比增速（近12个月）</h3>
-          <p className="text-[10px] text-[#94a3b8]">{DATA_SOURCES.electricity}</p>
-        </div>
-        <div className="p-4">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="bg-[#f8fafc]">
-                  <th className="border border-[#e2e8f0] px-2 py-1.5 text-left text-[#475569] font-semibold sticky left-0 bg-[#f8fafc]">产业</th>
-                  {recentMonths.map(m => (
-                    <th key={m} className="border border-[#e2e8f0] px-1.5 py-1.5 text-center text-[#475569] font-semibold min-w-[52px]">{m.slice(2)}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { name: '第一产业', data: electricityData.byIndustry.primary },
-                  { name: '第二产业', data: electricityData.byIndustry.secondary },
-                  { name: '第三产业', data: electricityData.byIndustry.tertiary },
-                ].map((row, ri) => (
-                  <tr key={row.name} className={ri % 2 === 0 ? 'bg-white' : 'bg-[#f8fafc]'}>
-                    <td className="border border-[#e2e8f0] px-2 py-1 text-[#334155] font-medium sticky left-0 bg-inherit">{row.name}</td>
-                    {row.data.slice(recentStart, recentEnd).map((v, ci) => (
-                      <td key={ci} className="border border-[#e2e8f0] px-1 py-1 text-center tabular-nums" style={{ color: v >= 0 ? '#ef4444' : '#22c55e' }}>
-                        {v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      {/* 2. 分产业用电量堆积柱状图 */}
+      <ChartCard title="全社会用电量（分产业）" subtitle={`${drStack.startStr} ~ ${drStack.endStr} | 第一产业:S5100023 第二产业:S5100024 第三产业:S5100025`} dateRange={drStack}>
+        <p className="text-[10px] text-[#94a3b8] mb-2">数据来源：Wind（来源：社会用电量.xlsx）</p>
+        <ReactECharts option={stackOption} style={{ height: 400 }} />
+      </ChartCard>
+
+      {/* 3. 分产业用电量同比增速柱状图 */}
+      <ChartCard title="全社会用电量同比增速（分产业）" subtitle={`${drYoy.startStr} ~ ${drYoy.endStr} | 一产同比:S5100124 二产同比:S5100125 三产同比:S5100126`} dateRange={drYoy}>
+        <p className="text-[10px] text-[#94a3b8] mb-2">数据来源：Wind（来源：社会用电量.xlsx）</p>
+        <ReactECharts option={yoyOption} style={{ height: 400 }} />
+      </ChartCard>
 
       {/* 指标说明 */}
       <IndicatorExplanation

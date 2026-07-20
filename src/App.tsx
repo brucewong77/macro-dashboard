@@ -2,7 +2,8 @@ import { useState, useCallback, createContext, useContext, lazy, Suspense } from
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { OverviewModule } from './modules/OverviewModule';
-import { LayoutDashboard, TrendingUp, Factory, Ship, ShoppingCart, HardHat, Landmark, Droplets } from 'lucide-react';
+import { GDPModule } from './modules/GDPModule';
+import { LayoutDashboard, BarChart3, TrendingUp, Factory, Ship, ShoppingCart, HardHat, Landmark, Droplets } from 'lucide-react';
 
 // 懒加载各模块 - 按需加载，减少首屏JS体积
 // OverviewModule 直接导入（文字/KPI卡片立即渲染），只有其中的图表部分懒加载
@@ -17,7 +18,6 @@ const ExportModule = lazy(() => import('./modules/ExportModule'));
 const ImportModule = lazy(() => import('./modules/ImportModule'));
 const RetailModule = lazy(() => import('./modules/RetailModule'));
 const IncomeModule = lazy(() => import('./modules/IncomeModule'));
-const UnemploymentModule = lazy(() => import('./modules/UnemploymentModule'));
 const FAIModule = lazy(() => import('./modules/FAIModule'));
 const RealEstateModule = lazy(() => import('./modules/RealEstateModule'));
 const SocialFinancingModule = lazy(() => import('./modules/SocialFinancingModule'));
@@ -35,6 +35,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { id: 'overview', label: '数据概览', icon: LayoutDashboard },
+  { id: 'gdp', label: 'GDP', icon: BarChart3 },
   {
     id: 'price', label: '价格指标', icon: TrendingUp,
     children: [
@@ -46,7 +47,7 @@ export const navItems: NavItem[] = [
     id: 'production', label: '生产指标', icon: Factory,
     children: [
       { id: 'pmi-mfg', label: '制造业PMI' },
-      { id: 'pmi-nonmfg', label: '非制造业PMI和财新PMI' },
+      { id: 'pmi-nonmfg', label: '非制造业PMI' },
       { id: 'industrial', label: '工业增加值' },
       { id: 'electricity', label: '社会用电量' },
     ],
@@ -62,9 +63,8 @@ export const navItems: NavItem[] = [
   {
     id: 'consumption', label: '消费指标', icon: ShoppingCart,
     children: [
-      { id: 'retail', label: '社零增加值' },
+      { id: 'retail', label: '社零情况' },
       { id: 'income', label: '居民可支配收入' },
-      { id: 'unemployment', label: '城镇失业率' },
     ],
   },
   {
@@ -78,7 +78,7 @@ export const navItems: NavItem[] = [
     id: 'finance', label: '金融指标', icon: Landmark,
     children: [
       { id: 'social-financing', label: '社融' },
-      { id: 'credit', label: '信贷' },
+      { id: 'credit', label: '存款和杠杆' },
     ],
   },
   {
@@ -86,16 +86,15 @@ export const navItems: NavItem[] = [
     children: [
       { id: 'policy-rate', label: '政策利率' },
       { id: 'money-supply', label: '资金活力' },
-      { id: 'deposit', label: '存款' },
     ],
   },
 ];
 
-// 全局可用的月份列表（2010-01 到 2026-05）
+// 全局可用的月份列表（2010-01 到 2026-06）
 export const ALL_MONTHS: string[] = [];
 for (let y = 2010; y <= 2026; y++) {
   const sm = y === 2010 ? 1 : 1;
-  const em = y === 2026 ? 5 : 12;
+  const em = y === 2026 ? 6 : 12;
   for (let m = sm; m <= em; m++) {
     ALL_MONTHS.push(`${y}-${String(m).padStart(2, '0')}`);
   }
@@ -139,6 +138,7 @@ function App() {
   const renderModule = () => {
     switch (activeModule) {
       case 'overview': return <OverviewModule />;
+      case 'gdp': return <GDPModule />;
       case 'ppi': return <PPIModule />;
       case 'cpi': return <CPIModule />;
       case 'pmi-mfg': return <PMIManufacturingModule />;
@@ -150,14 +150,12 @@ function App() {
       case 'import': return <ImportModule />;
       case 'retail': return <RetailModule />;
       case 'income': return <IncomeModule />;
-      case 'unemployment': return <UnemploymentModule />;
       case 'fai': return <FAIModule />;
       case 'realestate': return <RealEstateModule />;
       case 'social-financing': return <SocialFinancingModule />;
-      case 'credit': return <CreditModule />;
+      case 'credit': return <DepositModule />;
       case 'policy-rate': return <PolicyRateModule />;
       case 'money-supply': return <MoneySupplyModule />;
-      case 'deposit': return <DepositModule />;
       default: return <OverviewModule />;
     }
   };
@@ -169,7 +167,7 @@ function App() {
       sidebarCollapsed,
       setSidebarCollapsed,
     }}>
-      <div className="flex h-screen w-screen bg-[#f8fafc] text-[#1e293b] overflow-hidden">
+      <div className="flex h-screen w-full bg-[#f8fafc] text-[#1e293b] overflow-hidden">
         <Sidebar />
         <div className="flex flex-col flex-1 min-w-0">
           <TopBar />

@@ -1,13 +1,33 @@
 import { useMemo } from 'react';
 import { ChartCard } from '../components/ChartCard';
-import { months, cpiData, ppiData, pmiData, exportData, importData, retailData, industrialData, faiData, realestateData, getIndexRange } from '../data/economicData';
+import { months, cpiData, ppiData, pmiData, exportData, importData, retailData, industrialData, faiData, realestateData, getPrevMonthStr, isPublished } from '../data/economicData';
+import { WindIdHover } from '../components/WindIdHover';
 
-// 截至2026-06-10各指标最新发布月份
+/* ─── 概览指标 → Wind ID ─── */
+function overviewWindId(label: string): string {
+  const map: Record<string, string> = {
+    'CPI': 'M0000612', '核心CPI': 'M0085932', 'PPI': 'M0001227',
+    '制造业PMI': 'M0017126', '出口': 'M0000607', '进口': 'M0000609',
+    '工业增加值': 'M0000545', '社零': 'M0001428',
+    '固投累计': 'M0000273', '房地产销售': 'S0049591',
+  };
+  return map[label] ?? '';
+}
+/* ─── 环比指标Wind ID（与同比不同时单独标注） ─── */
+function overviewWindIdMom(label: string): string {
+  const map: Record<string, string> = {
+    'CPI': 'M0000706', '核心CPI': 'M0085934',
+    'PPI': 'M0000707',
+  };
+  return map[label] ?? '';
+}
+
+// 各指标最新发布月份（截止2026-07-10）
 const PUBLISHED_TO: Record<string, string> = {
-  'cpi': '2026-05', 'ppi': '2026-05', 'pmi': '2026-05', 'trade': '2026-05',
-  'retail': '2026-04', 'industrial': '2026-04', 'fai': '2026-04',
-  'realestate': '2026-04', 'sf': '2026-05', 'fx': '2026-05',
-  'unemployment': '2026-05', 'default': '2026-04',
+  'cpi': '2026-06', 'ppi': '2026-06', 'pmi': '2026-06', 'trade': '2026-06',
+  'retail': '2026-06', 'industrial': '2026-05', 'fai': '2026-06',
+  'realestate': '2026-06', 'sf': '2026-06', 'fx': '2026-06',
+  'unemployment': '2026-05', 'default': '2026-05',
 };
 
 function shouldShow(month: string, indicator: string): boolean {
@@ -17,14 +37,7 @@ function shouldShow(month: string, indicator: string): boolean {
 
 // 近12个月有效数据索引（最新月份为当前月份的上一个月）
 function getLast12WithData(): { index: number; month: string }[] {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1; // 当前月份 1-12
-  // 最新月份 = 当前月份的上一个月
-  let latestYear = year;
-  let latestMonth = month - 1;
-  if (latestMonth <= 0) { latestYear = year - 1; latestMonth = 12; }
-  const latestStr = `${latestYear}-${String(latestMonth).padStart(2, '0')}`;
+  const latestStr = getPrevMonthStr();
 
   const latestIdx = months.indexOf(latestStr);
   if (latestIdx === -1) {
@@ -54,71 +67,101 @@ function getVal(arr: number[], idx: number): number | null {
 
 // 获取显示值：已发布的显示真实数据(包括0)，未发布显示null
 
-// 纯 SVG 迷你折线图 - 无需 echarts，首屏立即可渲染
-// 每个指标使用自己的纵坐标范围，尽可能体现波动
-function SvgMiniChart({ data, color, name }: { data: number[]; color: string; name: string }) {
-  const width = 160;
-  const height = 80;
-  const padding = 8;
-  const validData = data.filter(v => v !== null && v !== undefined);
+// 纯 SVG 迷你折线图卡片
+function SvgMiniChart({ data, color, name }: { data: (number | null)[]; color: string; name: string }) {
+  const validData = data.filter((v): v is number => v !== null && v !== undefined);
   if (validData.length === 0) return null;
 
-  // 根据数据实际范围计算纵坐标，留20%边距，充分体现波动
+  // 根据数据实际范围计算纵坐标，留20%边距
   const dataMin = Math.min(...validData);
   const dataMax = Math.max(...validData);
   const margin = Math.max((dataMax - dataMin) * 0.2, 0.5);
   const minVal = Math.floor((dataMin - margin) * 10) / 10;
   const maxVal = Math.ceil((dataMax + margin) * 10) / 10;
   const range = maxVal - minVal;
+  const lastVal = validData[validData.length - 1];
+  const prevVal = validData.length > 1 ? validData[validData.length - 2] : lastVal;
+  const isUp = lastVal >= prevVal;
+
+  // 内边距：左预留Y轴标签，右预留最新值标签
+  const pad = { top: 12, bottom: 8, left: 36, right: 44 };
+  const svgW = 340, svgH = 120;
+  const plotW = svgW - pad.left - pad.right;
+  const plotH = svgH - pad.top - pad.bottom;
+  const n = validData.length;
 
   const points = validData.map((v, i) => {
-    const x = padding + (i / (validData.length - 1)) * (width - padding * 2);
-    const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
+    const x = pad.left + (i / (n - 1)) * plotW;
+    const y = pad.top + plotH - ((v - minVal) / range) * plotH;
     return `${x},${y}`;
   }).join(' ');
 
-  const zeroY = height - padding - ((0 - minVal) / range) * (height - padding * 2);
-  const lastVal = validData[validData.length - 1];
-  const arrow = lastVal >= 0 ? '↗' : '↘';
+  const zeroY = pad.top + plotH - ((0 - minVal) / range) * plotH;
 
-  // Y轴刻度标签（只显示最小值、中间值、最大值）
-  const yTicks = [minVal, (minVal + maxVal) / 2, maxVal];
+  // Y轴刻度（4档）
+  const yTicks = [
+    { label: maxVal.toFixed(1), y: pad.top },
+    { label: ((maxVal + minVal) / 2).toFixed(1), y: pad.top + plotH / 2 },
+    { label: minVal.toFixed(1), y: pad.top + plotH },
+  ];
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="text-xs font-bold text-[#475569] mb-1">{name}</div>
-      <div className="relative" style={{ width, height }}>
-        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
+    <div className="bg-white border border-[#e2e8f0] rounded-lg overflow-hidden hover:border-[#cbd5e1] hover:shadow-md transition-all">
+      {/* 头部：指标名 + 最新值 */}
+      <div className="flex items-center justify-between px-4 pt-3 pb-1">
+        <span className="text-sm font-semibold text-[#1e293b]">
+          <WindIdHover id={overviewWindId(name)}>{name}</WindIdHover>
+        </span>
+        <div className="flex items-center gap-1.5">
+          <span className={`text-lg font-bold ${isUp ? 'text-[#ef4444]' : 'text-[#22c55e]'}`}>
+            {lastVal >= 0 ? '+' : ''}{lastVal.toFixed(1)}%
+          </span>
+          <span className={`text-xs ${isUp ? 'text-[#ef4444]' : 'text-[#22c55e]'}`}>
+            {isUp ? '↑' : '↓'}
+          </span>
+        </div>
+      </div>
+      {/* SVG 图表 */}
+      <div className="px-2 pb-2">
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full h-auto" style={{ maxHeight: svgH }}>
+          {/* 网格线 */}
+          {yTicks.map(t => (
+            <line key={t.label} x1={pad.left} y1={t.y} x2={svgW - pad.right} y2={t.y} stroke="#f1f5f9" strokeWidth={1} />
+          ))}
+          {/* Y轴标签 */}
+          {yTicks.map(t => (
+            <text key={t.label} x={pad.left - 4} y={t.y + 3} textAnchor="end" fontSize={10} fill="#94a3b8">
+              {t.label}
+            </text>
+          ))}
           {/* 零线 */}
           {minVal <= 0 && maxVal >= 0 && (
-            <line x1={padding} y1={zeroY} x2={width - padding} y2={zeroY} stroke="#cbd5e1" strokeWidth={1} strokeDasharray="2,2" />
+            <line x1={pad.left} y1={zeroY} x2={svgW - pad.right} y2={zeroY} stroke="#cbd5e1" strokeWidth={1} strokeDasharray="3,3" />
           )}
-          {/* 背景网格线 */}
-          {yTicks.map(t => {
-            const y = height - padding - ((t - minVal) / range) * (height - padding * 2);
-            return (
-              <line key={t} x1={padding} y1={y} x2={width - padding} y2={y} stroke="#f1f5f9" strokeWidth={1} />
-            );
-          })}
+          {/* 面积填充 */}
+          <defs>
+            <linearGradient id={`grad-${name}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.12} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <polygon
+            points={`${pad.left},${pad.top + plotH} ${points} ${pad.left + plotW},${pad.top + plotH}`}
+            fill={`url(#grad-${name})`}
+          />
           {/* 折线 */}
           <polyline points={points} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          {/* 数据点 */}
-          {validData.map((v, i) => {
-            const x = padding + (i / (validData.length - 1)) * (width - padding * 2);
-            const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
-            return <circle key={i} cx={x} cy={y} r={2} fill={color} />;
+          {/* 数据点：只显示首尾 */}
+          {[0, n - 1].map(i => {
+            const x = pad.left + (i / (n - 1)) * plotW;
+            const y = pad.top + plotH - ((validData[i] - minVal) / range) * plotH;
+            return <circle key={i} cx={x} cy={y} r={3} fill="#fff" stroke={color} strokeWidth={2} />;
           })}
           {/* 最新值标签 */}
-          <text x={width - padding + 4} y={height - padding - ((lastVal - minVal) / range) * (height - padding * 2) + 4} fontSize={10} fill={color} fontWeight="bold">
-            {arrow} {lastVal.toFixed(1)}
+          <text x={svgW - pad.right + 4} y={pad.top + plotH - ((lastVal - minVal) / range) * plotH + 4} fontSize={11} fill={color} fontWeight="bold">
+            {lastVal >= 0 ? '+' : ''}{lastVal.toFixed(1)}
           </text>
         </svg>
-        {/* Y轴刻度 */}
-        <div className="absolute -left-1 top-0 bottom-0 flex flex-col justify-between text-[9px] text-[#94a3b8] leading-none pointer-events-none" style={{ paddingTop: padding, paddingBottom: padding }}>
-          <span>{maxVal.toFixed(1)}</span>
-          <span>{((minVal + maxVal) / 2).toFixed(1)}</span>
-          <span>{minVal.toFixed(1)}</span>
-        </div>
       </div>
     </div>
   );
@@ -126,22 +169,35 @@ function SvgMiniChart({ data, color, name }: { data: number[]; color: string; na
 
 // 概览图表区域 - 6个迷你 SVG 折线图
 function OverviewCharts() {
-  const [, e] = useMemo(() => getIndexRange(months, '2025-05', '2026-04'), []);
+  const prevMonth = getPrevMonthStr();
+  // 找到 prevMonth 在 months 中的索引，往前取12个月
+  const e = Math.min(months.indexOf(prevMonth) + 1, months.length);
   const sliceStart = Math.max(e - 12, 0);
   const sliceEnd = e;
 
   const indicators = [
-    { name: 'CPI', data: cpiData.yoy.slice(sliceStart, sliceEnd), color: '#ef4444' },
-    { name: 'PPI', data: ppiData.yoy.slice(sliceStart, sliceEnd), color: '#2563eb' },
-    { name: '出口', data: exportData.yoy.slice(sliceStart, sliceEnd), color: '#f59e0b' },
-    { name: '社零', data: retailData.yoy.slice(sliceStart, sliceEnd), color: '#8b5cf6' },
-    { name: '固投', data: faiData.accumYoy.slice(sliceStart, sliceEnd), color: '#22c55e' },
-    { name: '房地产', data: realestateData.salesAreaAccumYoy.slice(sliceStart, sliceEnd), color: '#06b6d4' },
+    { name: 'CPI', data: cpiData.yoy.slice(sliceStart, sliceEnd), color: '#ef4444', key: 'cpi' },
+    { name: 'PPI', data: ppiData.yoy.slice(sliceStart, sliceEnd), color: '#2563eb', key: 'ppi' },
+    { name: '出口', data: exportData.yoy.slice(sliceStart, sliceEnd), color: '#f59e0b', key: 'trade' },
+    { name: '社零', data: retailData.yoy.slice(sliceStart, sliceEnd), color: '#8b5cf6', key: 'retail' },
+    { name: '固投', data: faiData.accumYoy.slice(sliceStart, sliceEnd), color: '#22c55e', key: 'fai' },
+    { name: '房地产', data: realestateData.salesAreaAccumYoy.slice(sliceStart, sliceEnd), color: '#06b6d4', key: 'realestate' },
   ];
 
+  // 对每个指标，根据发布状态将未发布月份置 null
+  const slicedMonths = months.slice(sliceStart, sliceEnd);
+  const blankedIndicators = indicators.map(ind => ({
+    ...ind,
+    data: ind.data.map((v, i) => {
+      const month = slicedMonths[i];
+      if (!month) return v;
+      return isPublished(month, ind.key) ? v : null;
+    }),
+  }));
+
   return (
-    <div className="grid grid-cols-6 gap-2">
-      {indicators.map(ind => (
+    <div className="grid grid-cols-2 gap-4">
+      {blankedIndicators.map(ind => (
         <SvgMiniChart key={ind.name} data={ind.data} color={ind.color} name={ind.name} />
       ))}
     </div>
@@ -195,7 +251,9 @@ function DataTable({ isYoy }: { isYoy: boolean }) {
         <tbody>
           {rows.map((row, ri) => (
             <tr key={row.label} className={`border-b border-[#f1f5f9] ${ri % 2 === 1 ? 'bg-[#fafbfc]' : ''}`}>
-              <td className={`${cellClass} text-left font-medium text-[#1e293b] sticky left-0 ${ri % 2 === 1 ? 'bg-[#fafbfc]' : 'bg-white'} z-10`}>{row.label}</td>
+              <td className={`${cellClass} text-left font-medium text-[#1e293b] sticky left-0 ${ri % 2 === 1 ? 'bg-[#fafbfc]' : 'bg-white'} z-10`}>
+                <WindIdHover id={isYoy ? overviewWindId(row.label) : (overviewWindIdMom(row.label) || overviewWindId(row.label))}>{row.label}</WindIdHover>
+              </td>
               {last12.map(({ index, month }, ci) => {
                 const raw = getVal(row.data, index);
                 const show = shouldShow(month, row.indicator);
@@ -267,14 +325,14 @@ function DataTable({ isYoy }: { isYoy: boolean }) {
 }
 
 export function OverviewModule() {
-  const analysisMonth = '2026年4月';
+  const analysisMonth = '2026年6月';
 
   return (
     <div className="space-y-4">
       {/* 第一个模块：经济解读 - 立即渲染 */}
       <ChartCard title={`${analysisMonth} 宏观经济数据解读`}>
         <div className="text-sm text-[#334155] leading-relaxed space-y-2">
-          <p>{analysisMonth}，宏观经济运行总体平稳。物价温和回升，CPI同比上涨1.2%，PPI同比上涨2.8%（降幅持续收窄）。制造业PMI为50.3%保持扩张区间。出口总值同比增长8.5%，保持较强韧性。4月部分数据已公布，5月数据尚在陆续发布中，请关注后续更新。</p>
+          <p>{analysisMonth}，宏观经济运行总体平稳。物价温和回升，CPI同比上涨1.0%（6月），PPI同比上涨4.1%（6月），制造业PMI为50.3%保持扩张区间。出口当月同比27.0%大幅回升，社零同比1.0%温和增长。6月CPI/PPI/PMI/贸易数据均已公布。</p>
         </div>
       </ChartCard>
 

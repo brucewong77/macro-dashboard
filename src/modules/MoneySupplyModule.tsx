@@ -1,19 +1,23 @@
 import { useMemo } from 'react';
 import { ChartCard } from '../components/ChartCard';
 import { useChartDateRange } from '../hooks/useChartDateRange';
-import { months, moneyData, getIndexRange } from '../data/economicData';
+import { months, moneyData, getIndexRange, blankUnpublished } from '../data/economicData';
 import { DATA_SOURCES } from '../data/realData';
 import ReactECharts from 'echarts-for-react';
 import { IndicatorExplanation } from '../components/IndicatorExplanation';
+import { WindIdHover } from '../components/WindIdHover';
 
 export function MoneySupplyModule() {
-  const dr1 = useChartDateRange(2018, 1, 2026, 5);
+  const dr1 = useChartDateRange(2018, 1);
   const [s1, e1] = useMemo(() => getIndexRange(months, dr1.startStr, dr1.endStr), [dr1.startStr, dr1.endStr]);
   const fm1 = useMemo(() => months.slice(s1, e1), [s1, e1]);
+  const m2Data = useMemo(() => blankUnpublished(fm1, moneyData.m2.slice(s1, e1), 'sf'), [fm1, s1, e1]);
+  const m1Data = useMemo(() => blankUnpublished(fm1, moneyData.m1.slice(s1, e1), 'sf'), [fm1, s1, e1]);
+  const m0Data = useMemo(() => blankUnpublished(fm1, moneyData.m0.slice(s1, e1), 'sf'), [fm1, s1, e1]);
 
   return (
     <div className="space-y-4">
-      <ChartCard title="M0/M1/M2同比增速" subtitle={`${dr1.startStr} ~ ${dr1.endStr} | ${DATA_SOURCES.moneySupply}`} dateRange={dr1}>
+      <ChartCard title={<span>M0<WindIdHover id="M0001415" />/M1<WindIdHover id="M0001414" />/M2<WindIdHover id="M0001413" />同比增速</span>} subtitle={`${dr1.startStr} ~ ${dr1.endStr} | ${DATA_SOURCES.moneySupply}`} dateRange={dr1}>
         <ReactECharts option={{
           tooltip: { trigger: 'axis' as const, backgroundColor: 'rgba(255,255,255,0.95)', borderColor: '#e2e8f0', textStyle: { color: '#1e293b' } },
           legend: { data: ['M0', 'M1', 'M2'], top: 5, textStyle: { color: '#64748b', fontSize: 11 } },
@@ -21,9 +25,9 @@ export function MoneySupplyModule() {
           xAxis: { type: 'category', data: fm1, axisLabel: { color: '#64748b', fontSize: 10, rotate: 30 }, axisLine: { lineStyle: { color: '#e2e8f0' } } },
           yAxis: { type: 'value', name: '%', nameTextStyle: { color: '#94a3b8', fontSize: 10 }, axisLabel: { color: '#94a3b8', fontSize: 10 }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' as const } } },
           series: [
-            { name: 'M0', type: 'line', data: moneyData.m0.slice(s1, e1), smooth: true, lineStyle: { color: '#f59e0b', width: 1.5 }, itemStyle: { color: '#f59e0b' }, symbol: 'circle', symbolSize: 2 },
-            { name: 'M1', type: 'line', data: moneyData.m1.slice(s1, e1), smooth: true, lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, symbol: 'circle', symbolSize: 3 },
-            { name: 'M2', type: 'line', data: moneyData.m2.slice(s1, e1), smooth: true, lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' }, symbol: 'circle', symbolSize: 3 },
+            { name: 'M0', type: 'line', data: m0Data, smooth: true, lineStyle: { color: '#f59e0b', width: 1.5 }, itemStyle: { color: '#f59e0b' }, symbol: 'circle', symbolSize: 2 },
+            { name: 'M1', type: 'line', data: m1Data, smooth: true, lineStyle: { color: '#3b82f6', width: 2 }, itemStyle: { color: '#3b82f6' }, symbol: 'circle', symbolSize: 3 },
+            { name: 'M2', type: 'line', data: m2Data, smooth: true, lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' }, symbol: 'circle', symbolSize: 3 },
           ],
           animationDuration: 500,
         }} style={{ height: 380 }} />
