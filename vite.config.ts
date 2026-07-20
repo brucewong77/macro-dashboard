@@ -20,6 +20,9 @@ export default defineConfig({
     minify: 'esbuild',
     modulePreload: {
       polyfill: false,
+      // 禁止预加载 echarts（918KB），只在用户切换到图表模块时才加载
+      resolveDependencies: (_filename, deps, _ctx) =>
+        deps.filter(dep => !dep.includes('echarts')),
     },
     rollupOptions: {
       output: {
